@@ -131,6 +131,19 @@ section{margin-top:22px}
 .rrow2.out{opacity:.6}
 .reshh{display:grid;grid-template-columns:12px minmax(0,1fr) 72px 56px 34px;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .resnote{color:var(--muted);font-size:12px;margin:12px 0 0}
+.win{position:relative;overflow:hidden;border-radius:28px;padding:34px 28px 30px;margin-bottom:16px;text-align:center;color:#fff;background:radial-gradient(120% 140% at 50% 0%,#5A2470 0%,#2A1650 55%,#1A1036 100%);border:1px solid rgba(242,193,78,.35)}
+.win-k{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FF9AA8}
+.win-h{font-family:Fraunces,serif;font-weight:700;font-size:clamp(44px,9vw,104px);line-height:.95;letter-spacing:-.02em;margin:10px 0 0;background:linear-gradient(90deg,#FFE08A,#F2C14E 45%,#FFF4D6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.win-s{max-width:720px;margin:14px auto 0;font-size:16px;line-height:1.5;color:rgba(255,255,255,.88)}
+.win-s b{color:#F2C14E}
+.win-k,.win-h,.win-s{position:relative;z-index:1}.cf{z-index:0}
+.cf{position:absolute;width:10px;height:16px;border-radius:3px;opacity:.85;animation:cf 6s linear infinite}
+.cf.c1{left:6%;background:#F2C14E;animation-delay:0s}.cf.c2{left:18%;background:#E8455A;animation-delay:1.5s}.cf.c3{left:30%;background:#7FF0D2;animation-delay:3s}.cf.c4{left:44%;background:#8B76DF;animation-delay:.8s}
+.cf.c5{left:58%;background:#F2C14E;animation-delay:2.2s}.cf.c6{left:70%;background:#E8455A;animation-delay:4s}.cf.c7{left:82%;background:#7FF0D2;animation-delay:1.1s}.cf.c8{left:93%;background:#8B76DF;animation-delay:3.4s}
+@keyframes cf{0%{top:-20px;transform:rotate(0)}100%{top:110%;transform:rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.cf{display:none}}
+@media (max-width:560px){.win{padding:26px 18px 22px;border-radius:24px}.win-s{font-size:15px}}
+
 @media (max-width:480px){.rrow2,.reshh{grid-template-columns:12px minmax(0,1fr) 0 56px 30px;column-gap:8px}.rrow2 .bb{visibility:hidden}.resgrid{grid-template-columns:1fr}}
 .src{position:relative;overflow:hidden}
 .src::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
@@ -228,6 +241,13 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
   </header>
 
   <!-- HERO -->
+  <!-- POBEDA -->
+  <section class="win" id="win" aria-label="Studenti pobedili">
+    <div class="win-k">Izbori 2026 · prve procene</div>
+    <h1 class="win-h">STUDENTI POBEDILI</h1>
+    <p class="win-s">Studentska lista osvojila je apsolutnu većinu: oko <b>52%</b> glasova i <b>140 od 250</b> mandata prema proceni Ipsosa i CeSID-a. Aleksandar Vučić je priznao poraz. Izlaznost oko <b>69,7%</b>, najveća od 1990.</p>
+    <i class="cf c1"></i><i class="cf c2"></i><i class="cf c3"></i><i class="cf c4"></i><i class="cf c5"></i><i class="cf c6"></i><i class="cf c7"></i><i class="cf c8"></i>
+  </section>
   <div class="hero" id="hero">
     <div class="hgrid">
       <div>
@@ -332,7 +352,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 "use strict";
 var SB_URL="https://fszezlruwuyzdquomijs.supabase.co";
 var SB_KEY="sb_publishable_1xLOxtE1-5PyZW0zdrjoBg_6000CtCx";
-var VOTERS=6451292,VOTERS23=6500666,BUILD="8";
+var VOTERS=6451292,VOTERS23=6500666,BUILD="9";
 var SRC=[
   {id:"RIK",name:"RIK",full:"Republička izborna komisija",c:"--rik"},
   {id:"CRTA",name:"CRTA",full:"posmatračka misija, 500 biračkih mesta",c:"--crta"},
