@@ -131,7 +131,7 @@ section{margin-top:22px}
 .rrow2.out{opacity:.6}
 .reshh{display:grid;grid-template-columns:12px minmax(0,1fr) 72px 56px 34px;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .resnote{color:var(--muted);font-size:12px;margin:12px 0 0}
-@media (max-width:480px){.rrow2,.reshh{grid-template-columns:12px minmax(0,1fr) 40px 54px 30px}.resgrid{grid-template-columns:1fr}}
+@media (max-width:480px){.rrow2,.reshh{grid-template-columns:12px minmax(0,1fr) 0 56px 30px;column-gap:8px}.rrow2 .bb{visibility:hidden}.resgrid{grid-template-columns:1fr}}
 .src{position:relative;overflow:hidden}
 .src::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
 .src .name{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700}
@@ -727,7 +727,7 @@ var RES_COLORS=["#E0A82E","#8B76DF","#139AA3","#E8455A","#4A90D9","#B98AF0","#3F
 function dhondt(lists){var q={},seats={};lists.forEach(function(l,i){if(l.inn){q[i]=l.pct*(l.minority?1.35:1);seats[i]=0;}});var ks=Object.keys(q);if(!ks.length)return seats;for(var n=0;n<250;n++){var best=null,bv=-1;ks.forEach(function(k){var v=q[k]/(seats[k]+1);if(v>bv){bv=v;best=k;}});seats[best]++;}return seats;}
 function renderResults(){
   var sec=document.getElementById("resSec"),R=state.results||[];
-  if(!R.length){sec.hidden=true;return;}sec.hidden=false;
+  if(!R.length){sec.hidden=true;return;}sec.hidden=false;var hero=document.getElementById("hero");if(hero&&sec.nextElementSibling!==hero){hero.parentNode.insertBefore(sec,hero);sec.style.marginBottom="16px";}
   var order={"CESID":1,"CRTA":2,"RIK":3};R=R.slice().sort(function(a,b){return (order[a.source]||9)-(order[b.source]||9);});
   var html="";
   R.forEach(function(r){
