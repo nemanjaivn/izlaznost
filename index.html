@@ -273,7 +273,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     <h2>Regioni</h2>
     <p class="lede" id="regLede">Izlaznost po regionima, prema RIK-u.</p>
     <div class="regwrap"><div class="chartbox" id="regMap"><div class="tip" id="mapTip"></div></div><div><div class="chartbox" id="regChart"></div><div class="legend" id="regLegend"></div></div></div>
-    <p class="lede" style="font-size:12px;margin-top:10px">Granice regiona: Eurostat (NUTS 2). RIK objavljuje izlaznost po regionima bez Kosova i Metohije.</p>
+    <p class="lede" style="font-size:12px;margin-top:10px">Pređi mišem ili tapni na region. Granice: Eurostat (NUTS 2). RIK objavljuje regione bez Kosova i Metohije.</p>
   </section>
 
   <section class="card">
@@ -308,7 +308,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 "use strict";
 var SB_URL="https://fszezlruwuyzdquomijs.supabase.co";
 var SB_KEY="sb_publishable_1xLOxtE1-5PyZW0zdrjoBg_6000CtCx";
-var VOTERS=6451292,VOTERS23=6500666,BUILD="3";
+var VOTERS=6451292,VOTERS23=6500666,BUILD="4";
 var SRC=[
   {id:"RIK",name:"RIK",full:"Republička izborna komisija",c:"--rik"},
   {id:"CRTA",name:"CRTA",full:"posmatračka misija, 500 biračkih mesta",c:"--crta"},
@@ -627,23 +627,26 @@ function scenRows(rows){var min=35,max=75;return rows.map(function(r){var w=Math
 function renderRegions(){
   var box=document.getElementById("regChart"),lede=document.getElementById("regLede"),leg=document.getElementById("regLegend"),W=Math.max(280,box.clientWidth);
   var hours={};state.regions.forEach(function(r){hours[+r.hour]=hours[+r.hour]||{};hours[+r.hour][r.region]=+r.value;});
-  var hs=Object.keys(hours).map(Number).sort(function(a,b){return a-b;}),h26=hs[hs.length-1];
-  var cur=h26!=null?hours[h26]:null,Lr=latest(),want=h26!=null?h26:(Lr?Lr.h:nowH()),refH=h26!=null?h26:[10,14,18].reduce(function(b,x){return Math.abs(x-want)<Math.abs(b-want)?x:b;},10),ref=REG2023[refH]||null;
-  lede.textContent=cur?("RIK, izlaznost do "+hh(h26)+(ref?", poređenje sa 2023. u istom satu.":". Za 2023. nema regionalnog podatka za ovaj sat.")):"Čeka se prvi regionalni presek RIK-a (u 11.05). Do tada: kako su regioni glasali 2023. do "+refH+"h, najbližeg sata za koji postoje podaci po regionima.";
-  var rowH=46,H=REGORD.length*rowH+8,lw=W<420?118:178,iw=W-lw-56,max=0;REGORD.forEach(function(k){max=Math.max(max,(cur&&cur[k])||0,(ref&&ref[k])||0);});max=Math.max(10,Math.ceil((max+3)/10)*10);
+  var hs=Object.keys(hours).map(Number).sort(function(a,b){return a-b;}),h26=hs[hs.length-1],cur=h26!=null?hours[h26]:null;
+  lede.textContent=cur?("Izlaznost po regionima do "+hh(h26)+", prema RIK-u."):"Čeka se prvi regionalni presek RIK-a.";
+  var rowH=46,H=REGORD.length*rowH+8,lw=W<420?118:178,iw=W-lw-56,max=0;REGORD.forEach(function(k){max=Math.max(max,(cur&&cur[k])||0);});max=Math.max(10,Math.ceil((max+3)/10)*10);
   var X=function(v){return lw+v/max*iw;};
   var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Izlaznost po regionima">';
   REGORD.forEach(function(k,i){var y=i*rowH+6,name=REG[k];if(W<420)name=name.replace("Šumadija i Zapadna Srbija","Šumadija i Zap.").replace("Južna i Istočna Srbija","Južna i Ist.").replace("Beogradski region","Beograd");
-    s+='<text x="0" y="'+(y+19)+'" style="fill:var(--ink2);font-size:13px;font-weight:600;font-family:Manrope">'+esc(name)+'</text>';
+    var cv=cur&&cur[k]!=null?cur[k]:null;
+    s+='<g class="rrow" data-r="'+k+'" style="transition:opacity .15s"><rect x="0" y="'+y+'" width="'+W+'" height="'+rowH+'" fill="transparent"/><text x="0" y="'+(y+19)+'" style="fill:var(--ink2);font-size:13px;font-weight:600;font-family:Manrope">'+esc(name)+'</text>';
     s+='<rect x="'+lw+'" y="'+(y+8)+'" width="'+iw+'" height="16" rx="8" fill="var(--grid)"/>';
-    var rv=ref&&ref[k]!=null?ref[k]:null,cv=cur&&cur[k]!=null?cur[k]:null;
-    if(cv!=null){s+='<rect x="'+lw+'" y="'+(y+8)+'" width="'+Math.max(4,X(cv)-lw)+'" height="16" rx="8" fill="var(--rik)"/><text class="lbl" x="'+(X(cv)+8)+'" y="'+(y+21)+'">'+f(cv)+'%</text>';}
-    else if(rv!=null){s+='<rect x="'+lw+'" y="'+(y+8)+'" width="'+Math.max(4,X(rv)-lw)+'" height="16" rx="8" fill="var(--y2023)" opacity=".7"/><text class="lbl" x="'+(X(rv)+8)+'" y="'+(y+21)+'">'+f(rv)+'%</text>';}
-    if(cv!=null&&rv!=null){s+='<line x1="'+X(rv)+'" x2="'+X(rv)+'" y1="'+(y+3)+'" y2="'+(y+29)+'" stroke="var(--y2023)" stroke-width="3" stroke-linecap="round"/><text class="lbl m" x="'+(X(rv))+'" y="'+(y+41)+'" text-anchor="middle" font-size="10">2023: '+f(rv,1)+'</text>';}
+    if(cv!=null)s+='<rect x="'+lw+'" y="'+(y+8)+'" width="'+Math.max(4,X(cv)-lw)+'" height="16" rx="8" fill="var(--rik)"/><text class="lbl" x="'+(X(cv)+8)+'" y="'+(y+21)+'">'+f(cv)+'%</text>';
+    s+='</g>';
   });
   box.innerHTML=s+'</svg>';
-  renderMap(cur||ref,hh(refH),cur?ref:null);
-  leg.innerHTML=cur?('<span style="--c:var(--rik)"><i></i>2026</span>'+(ref?'<span style="--c:var(--y2023)"><i></i>2023, isti sat (crtica)</span>':'')):'<span style="--c:var(--y2023)"><i></i>2023, do '+refH+'h</span>';
+  renderMap(cur,h26!=null?hh(h26):"",null);
+  leg.innerHTML="";
+  box.querySelectorAll(".rrow").forEach(function(g){g.addEventListener("pointerenter",function(){hiReg(g.getAttribute("data-r"));});g.addEventListener("pointerleave",function(){hiReg(null);});});
+}
+function hiReg(r){
+  document.querySelectorAll("#regChart .rrow").forEach(function(g){g.style.opacity=(!r||g.getAttribute("data-r")===r)?"1":"0.35";});
+  document.querySelectorAll("#regMap .mreg").forEach(function(p){var on=p.getAttribute("data-r")===r;p.style.opacity=(!r||on)?"1":"0.45";p.setAttribute("stroke",on?"var(--ink)":"var(--surface)");p.setAttribute("stroke-width",on?"3":"2");if(on)p.parentNode.insertBefore(p,p.parentNode.querySelector("text"));});
 }
 
 
@@ -672,7 +675,7 @@ function renderMap(cur,hourLbl,ref){
   s+='</svg>';box.innerHTML=s;box.appendChild(tip);
   box.querySelectorAll(".mreg").forEach(function(el){function show(ev){var r=el.getAttribute("data-r"),b=box.getBoundingClientRect();if(r==="KIM"){tip.innerHTML='<div class="t">Kosovo i Metohija</div><div class="r"><span>RIK ne objavljuje preseke po satima</span></div>';}else{var v=cur&&cur[r]!=null?cur[r]:null,rv=ref&&ref[r]!=null?ref[r]:null;tip.innerHTML='<div class="t">'+esc(REG[r])+'</div><div class="r"><span>do '+hourLbl+'</span><b>'+(v!=null?f(v)+"%":"—")+'</b></div>'+(rv!=null?'<div class="r"><span>2023, isti sat</span><b>'+f(rv)+'%</b></div>':"");}
     tip.classList.add("on");var x=ev.clientX-b.left+12,y=ev.clientY-b.top+12;if(x+tip.offsetWidth>b.width)x=b.width-tip.offsetWidth-4;tip.style.left=x+"px";tip.style.top=y+"px";}
-    el.addEventListener("pointermove",show);el.addEventListener("pointerdown",show);el.addEventListener("pointerleave",function(){tip.classList.remove("on");});});
+    el.addEventListener("pointermove",show);el.addEventListener("pointerdown",show);el.addEventListener("pointerenter",function(){if(el.getAttribute("data-r")!=="KIM")hiReg(el.getAttribute("data-r"));});el.addEventListener("pointerleave",function(){tip.classList.remove("on");hiReg(null);});});
 }
 // ---------- history ----------
 function renderHist(){
