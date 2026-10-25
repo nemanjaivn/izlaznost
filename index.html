@@ -306,7 +306,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 "use strict";
 var SB_URL="https://fszezlruwuyzdquomijs.supabase.co";
 var SB_KEY="sb_publishable_1xLOxtE1-5PyZW0zdrjoBg_6000CtCx";
-var VOTERS=6451292,VOTERS23=6500666;
+var VOTERS=6451292,VOTERS23=6500666,BUILD="2";
 var SRC=[
   {id:"RIK",name:"RIK",full:"Republička izborna komisija",c:"--rik"},
   {id:"CRTA",name:"CRTA",full:"posmatračka misija, 500 biračkih mesta",c:"--crta"},
@@ -388,7 +388,7 @@ function load(){
   var ctl=("AbortController" in window)?new AbortController():null;var to=setTimeout(function(){if(ctl)ctl.abort();},9000);
   return fetch(SB_URL+"/rest/v1/rpc/izb_get",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json"},body:"{}",signal:ctl?ctl.signal:undefined,cache:"no-store"})
   .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
-  .then(function(d){clearTimeout(to);state.points=d.points||[];state.regions=d.regions||[];var mx=null;state.points.concat(state.regions).forEach(function(p){if(!mx||p.at>mx)mx=p.at;});state.updated=mx;state.ok=true;state.checked=new Date();try{localStorage.setItem("odziv_cache",JSON.stringify({points:state.points,regions:state.regions,updated:state.updated}));}catch(e){}render();})
+  .then(function(d){clearTimeout(to);if(d.build&&d.build!==BUILD){try{if(sessionStorage.getItem("odziv_rl")!==d.build){sessionStorage.setItem("odziv_rl",d.build);location.reload();return;}}catch(e){}}state.points=d.points||[];state.regions=d.regions||[];var mx=null;state.points.concat(state.regions).forEach(function(p){if(!mx||p.at>mx)mx=p.at;});state.updated=mx;state.ok=true;state.checked=new Date();try{localStorage.setItem("odziv_cache",JSON.stringify({points:state.points,regions:state.regions,updated:state.updated}));}catch(e){}render();})
   .catch(function(){clearTimeout(to);state.ok=false;state.checked=new Date();render();});
 }
 
