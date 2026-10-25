@@ -332,7 +332,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 "use strict";
 var SB_URL="https://fszezlruwuyzdquomijs.supabase.co";
 var SB_KEY="sb_publishable_1xLOxtE1-5PyZW0zdrjoBg_6000CtCx";
-var VOTERS=6451292,VOTERS23=6500666,BUILD="7";
+var VOTERS=6451292,VOTERS23=6500666,BUILD="8";
 var SRC=[
   {id:"RIK",name:"RIK",full:"Republička izborna komisija",c:"--rik"},
   {id:"CRTA",name:"CRTA",full:"posmatračka misija, 500 biračkih mesta",c:"--crta"},
@@ -733,15 +733,15 @@ function renderResults(){
   R.forEach(function(r){
     var inv=2,given=(r.lists||[]).some(function(l){return l.seats!=null;}),L=(r.lists||[]).map(function(l,i){return {name:l.name,pct:(l.pct==null?NaN:+l.pct),minority:!!l.minority,other:/^ostal/i.test(l.name),gs:l.seats,c:l.color||RES_COLORS[i%RES_COLORS.length]};});
     L.forEach(function(l){l.inn=!l.other&&(l.minority||l.pct*(1-inv/100)>=3);});
-    if(given){L.forEach(function(l){l.inn=l.gs!=null;l.seats=l.gs||0;});}else{var st=dhondt(L);L.forEach(function(l,i){l.seats=st[i]||0;});}
+    var tot=L.reduce(function(a,l){return a+(isNaN(l.pct)?0:l.pct);},0),noSeats=!given&&tot<95;if(given){L.forEach(function(l){l.inn=l.gs!=null;l.seats=l.gs||0;});}else if(noSeats){L.forEach(function(l){l.inn=false;l.seats=0;});}else{var st=dhondt(L);L.forEach(function(l,i){l.seats=st[i]||0;});}
     var rk=L.slice().sort(function(a,b){return (a.other?1:0)-(b.other?1:0)||(given?(b.seats-a.seats):0)||((isNaN(b.pct)?-1:b.pct)-(isNaN(a.pct)?-1:a.pct));});
     var src=SRCMAP[r.source]||{c:"--muted",name:r.source};
     var seg=rk.filter(function(l){return l.seats>0;}).map(function(l){return '<div style="flex:'+l.seats+';background:'+l.c+'" title="'+esc(l.name)+': '+l.seats+'"></div>';}).join("");
     var mx=Math.max.apply(null,rk.map(function(l){return isNaN(l.pct)?0:l.pct;}).concat([1]));
     html+='<div class="rescol"><div class="reshd"><span class="sw" style="background:var('+src.c+')"></span><b>'+esc(r.label)+'</b>'+(r.at_label?'<span>· '+esc(r.at_label)+'</span>':'')+(r.processed!=null?'<span>· obrađeno '+f(+r.processed,1)+'% BM</span>':'')+(r.turnout!=null?'<span>· izlaznost '+f(+r.turnout,1)+'%</span>':'')+'</div>'
-      +'<div class="pwrap"><div class="pbar">'+seg+'</div><div class="pmaj" style="left:50.4%"></div><div class="pmajl" style="left:50.4%">126 = većina</div></div>'
+      +(noSeats?'<div style="height:14px"></div>':'<div class="pwrap"><div class="pbar">'+seg+'</div><div class="pmaj" style="left:50.4%"></div><div class="pmajl" style="left:50.4%">126 = većina</div></div>')
       +'<div class="reshh"><span></span><span>Lista</span><span></span><span style="text-align:right">%</span><span style="text-align:right">Mand.</span></div>'
-      +rk.map(function(l){return '<div class="rrow2'+(l.inn?'':' out')+'"><span class="sw" style="background:'+l.c+'"></span><span class="nm" title="'+esc(l.name)+'">'+esc(l.name)+(l.minority?' <small style="color:var(--muted);font-weight:600">manj.</small>':'')+'</span><span class="bb"><i style="width:'+(isNaN(l.pct)?0:(l.pct/mx*100)).toFixed(1)+'%;background:'+l.c+'"></i></span><span class="pc">'+(isNaN(l.pct)?'–':f(l.pct,1)+'%')+'</span><span class="st">'+(l.inn?l.seats:'–')+'</span></div>';}).join("")
+      +rk.map(function(l){return '<div class="rrow2'+(l.inn||noSeats?'':' out')+'"><span class="sw" style="background:'+l.c+'"></span><span class="nm" title="'+esc(l.name)+'">'+esc(l.name)+(l.minority?' <small style="color:var(--muted);font-weight:600">manj.</small>':'')+'</span><span class="bb"><i style="width:'+(isNaN(l.pct)?0:(l.pct/mx*100)).toFixed(1)+'%;background:'+l.c+'"></i></span><span class="pc">'+(isNaN(l.pct)?'–':f(l.pct,1)+'%')+'</span><span class="st">'+(l.inn?l.seats:'–')+'</span></div>';}).join("")
       +(r.note?'<p class="resnote">'+esc(r.note)+'</p>':'')+(r.url?'<p class="resnote"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Izvor</a></p>':'')+'</div>';
   });
   document.getElementById("resGrid").innerHTML=html;
