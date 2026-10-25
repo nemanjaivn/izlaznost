@@ -207,7 +207,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
         <div class="hnote" id="hNote"></div>
       </div>
       <div class="proj" id="projBox">
-        <h3 id="projTitle">Procena konačne izlaznosti</h3>
+        <h3 id="projTitle">Ako se tempo zadrži</h3>
         <svg class="gauge" id="gauge" viewBox="0 0 300 170" aria-hidden="true"></svg>
         <div class="projval" id="projVal">—</div>
         <div class="projrange" id="projRange"></div>
@@ -255,23 +255,16 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     </div>
   </section>
 
-  <section class="grid2">
-    <div class="card">
-      <h2>Gde bi izlaznost mogla da završi</h2>
-      <p class="lede" id="scenLede">Kad stigne prvi presek, ovde se vidi gde bi izlaznost završila da se ostatak dana kreće kao na ranijim izborima.</p>
-      <div class="scen" id="scen"></div>
-    </div>
-    <div class="card">
-      <h2>Regioni</h2>
-      <p class="lede" id="regLede">Izlaznost po regionima, prema RIK-u.</p>
-      <div class="chartbox" id="regChart"></div>
-      <div class="legend" id="regLegend"></div>
-    </div>
+  <section class="card">
+    <h2>Regioni</h2>
+    <p class="lede" id="regLede">Izlaznost po regionima, prema RIK-u.</p>
+    <div class="chartbox" id="regChart"></div>
+    <div class="legend" id="regLegend"></div>
   </section>
 
   <section class="card">
     <h2>Izlaznost od 1990.</h2>
-    <p class="lede">Konačna izlaznost na parlamentarnim izborima u Srbiji. Za 2026. je prikazana procena dok ne stigne konačan podatak.</p>
+    <p class="lede">Konačna izlaznost na parlamentarnim izborima u Srbiji. Za 2026. je prikazano gde bi izlaznost bila ako se današnji tempo zadrži, dok ne stigne konačan podatak.</p>
     <div class="chartbox" id="histChart"></div>
   </section>
 
@@ -280,7 +273,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     <div class="method" style="margin-top:12px">
       <p><b>Izvori.</b> RIK saopštava izlaznost na konferencijama (11.05, 13.05, 15.05, 17.05 i 19.05) za prethodni pun sat. CRTA prati 500 biračkih mesta, a CeSID i Ipsos 750 i objavljuju preseke u 9, 11, 14, 17 i 19 časova. Brojevi se razlikuju jer se razlikuju uzorci i trenutak preseka, pa je svaki izvor prikazan zasebno.</p>
       <p><b>Poređenje.</b> Razlika prema 2023. se računa prema podatku istog izvora u istom satu kad postoji, inače prema RIK-u. Kad tačan podatak za taj sat ne postoji, vrednost je procenjena sa krive između dva poznata preseka i označena sa ≈.</p>
-      <p><b>Procena konačne izlaznosti.</b> Za svake ranije izbore se pita: gde bi 2026. završila da ostatak dana teče kao tada? Ujutru se pretpostavlja da se razlika u procentnim poenima zadržava do kraja dana, a kako dan odmiče (od 10 do 16h) model postepeno prelazi na pretpostavku da glasanje teče istim relativnim tempom („konačna / izlaznost u tom satu"). Glavna vrednost je prosek scenarija 2022. i 2023. Raspon je simetričan oko glavne vrednosti: koliko god se uporedivi scenariji (2016, 2022, 2023) razilaze, toliko gore i dole, plus margina koja se smanjuje kako dan odmiče. 2020. je prikazana, ali nije u rasponu, jer su te izbore obeležili bojkot dela opozicije i pandemija. Ovo je statistička projekcija, a ne prognoza: ako se ponašanje birača razlikuje od ranijih izbora, konačan broj može izaći van raspona.</p>
+      <p><b>„Ako se zadrži“.</b> Ovo nije prognoza, nego odgovor na jedno pitanje: gde bi izlaznost završila da se današnji tempo nastavi? Ujutru se uzima da razlika u procentnim poenima prema 2022. i 2023. ostaje ista do 20h, a od 10 do 16h računica postepeno prelazi na pretpostavku da ostatak dana teče istim relativnim tempom kao tada. Prikazan je prosek za 2022. i 2023.</p>
       <p><b>Ograničenja.</b> RIK-ovi preseci tokom dana su bez Kosova i Metohije, a konačna izlaznost je ukupna. Za 2020. i 2016. nema potpunih RIK-ovih podataka po satima, pa su njihove krive složene od RIK-a, CRTA-e i CeSID/Ipsosa. Upisanih birača za 2026: 6.451.292 (RIK).</p>
     </div>
     <h3 style="font-size:14px;margin:16px 0 6px">Izvori podataka</h3>
@@ -293,7 +286,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     </ul>
   </section>
 
-  <footer>Odziv je nezavisan prikaz javno objavljenih podataka i nije povezan sa RIK-om, CRTA-om, CeSID-om ni Ipsosom. Stranica se sama osvežava svakog minuta.<br><span id="fUpd"></span></footer>
+  <footer>Odziv je nezavisan prikaz javno objavljenih podataka i nije povezan sa RIK-om, CRTA-om, CeSID-om ni Ipsosom. Stranica se sama osvežava svakog minuta. Broji se samo poseta i sa kog sajta je došla, bez kolačića i ličnih podataka.<br><span id="fUpd"></span></footer>
 </div>
 
 <script>
@@ -412,8 +405,8 @@ function renderHero(){
   // projection
   var P=L?projectFrom(L.h,L.v):null,pv=document.getElementById("projVal"),pr=document.getElementById("projRange"),pn=document.getElementById("projNote"),pt=document.getElementById("projTitle");
   if(F){pt.textContent="Konačna izlaznost";pv.textContent=f(F.v,1)+"%";pr.textContent="2023: "+f(HIST["2023"].final,1)+"% · 2022: "+f(HIST["2022"].final,1)+"%";pn.textContent="";drawGauge(F.v,null,null);}
-  else if(P){pt.textContent="Procena konačne izlaznosti";pv.textContent="≈ "+f(P.central,1)+"%";pr.textContent="raspon "+f(P.lo,1)+"–"+f(P.hi,1)+"%";pn.textContent=(L.h<12?"Rana procena, nesigurnost je velika. ":"")+"Na osnovu "+SRCMAP[L.s].name+" do "+hh(L.h)+".";drawGauge(P.central,P.lo,P.hi);}
-  else{pt.textContent="Procena konačne izlaznosti";pv.textContent="—";pr.textContent="pojaviće se posle prvog preseka";pn.textContent="2023: "+f(58.77,1)+"% · 2022: "+f(58.60,1)+"%";drawGauge(null,null,null);}
+  else if(P){var gap=L.v-ref2023(L.s,L.h).v;pt.textContent=wMult(P.h)<0.5?"Ako se razlika zadrži":"Ako se ovaj tempo zadrži";pv.textContent="≈ "+f(P.central,1)+"%";pr.textContent=wMult(P.h)<0.5?("Danas "+fpp(gap)+" p.p. prema 2023. Da ta razlika ostane do 20h, izlaznost bi bila oko "+f(P.central,1)+"%."):("Da ostatak dana teče kao 2022. i 2023, izlaznost bi bila oko "+f(P.central,1)+"%.");pn.textContent="2023: 58,8% · rekord 1990: 71,5% · na osnovu "+SRCMAP[L.s].name+" do "+hh(L.h);drawGauge(P.central,null,null);}
+  else{pt.textContent="Ako se tempo zadrži";pv.textContent="—";pr.textContent="pojaviće se posle prvog preseka";pn.textContent="2023: "+f(58.77,1)+"% · 2022: "+f(58.60,1)+"%";drawGauge(null,null,null);}
 }
 function drawGauge(v,lo,hi){
   var g=document.getElementById("gauge"),cx=150,cy=150,R=118,min=30,max=80;
@@ -465,7 +458,7 @@ function renderSources(){
 function renderToggles(){
   var h="";SRC.forEach(function(S){h+='<button class="tog" data-k="src:'+S.id+'" aria-pressed="'+state.src[S.id]+'" style="--c:var('+S.c+')"><span class="sw"></span>'+esc(S.name)+' 2026</button>';});
   YEARS.forEach(function(y){h+='<button class="tog" data-k="yr:'+y+'" aria-pressed="'+state.yrs[y]+'" style="--c:var('+HIST[y].c+')"><span class="sw dash"></span>'+y+'.</button>';});
-  h+='<button class="tog" data-k="proj" aria-pressed="'+state.proj+'" style="--c:var(--gold-ink)"><span class="sw dash"></span>Procena</button>';
+  h+='<button class="tog" data-k="proj" aria-pressed="'+state.proj+'" style="--c:var(--gold-ink)"><span class="sw dash"></span>Ako se zadrži</button>';
   document.getElementById("togs").innerHTML=h;
 }
 var MAIN={};
@@ -473,7 +466,7 @@ function renderMain(){
   var box=document.getElementById("mainChart"),W=Math.max(300,box.clientWidth),mob=W<560,H=mob?320:400;
   var m={l:mob?34:42,r:mob?64:86,t:16,b:30},iw=W-m.l-m.r,ih=H-m.t-m.b;
   var L=latest(),P=(state.proj&&L&&!finalPoint())?projectFrom(L.h,L.v):null;
-  var ymax=70;state.points.forEach(function(p){if(+p.value+6>ymax)ymax=Math.ceil((+p.value+6)/10)*10;});if(P&&P.hi+4>ymax)ymax=Math.ceil((P.hi+4)/10)*10;ymax=Math.min(100,ymax);
+  var ymax=70;state.points.forEach(function(p){if(+p.value+6>ymax)ymax=Math.ceil((+p.value+6)/10)*10;});if(P&&P.central+4>ymax)ymax=Math.ceil((P.central+4)/10)*10;ymax=Math.min(100,ymax);
   var X=function(h){return m.l+(h-7)/13*iw;},Y=function(v){return m.t+ih-(v/ymax)*ih;};
   MAIN={X:X,Y:Y,m:m,iw:iw,ih:ih,W:W,H:H,P:P};
   var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Grafikon izlaznosti kroz dan"><g class="ax">';
@@ -495,7 +488,7 @@ function renderMain(){
     steps.forEach(function(t,i){var q=projPath(P,t);top+=(i?"L":"M")+X(t).toFixed(1)+" "+Y(q.hi).toFixed(1);mid+=(i?"L":"M")+X(t).toFixed(1)+" "+Y(q.mid).toFixed(1);});
     steps.slice().reverse().forEach(function(t){var q=projPath(P,t);bot+="L"+X(t).toFixed(1)+" "+Y(q.lo).toFixed(1);});
     s+='<defs><linearGradient id="pband" x1="0" x2="1"><stop offset="0" stop-color="var(--gold)" stop-opacity=".08"/><stop offset="1" stop-color="var(--gold)" stop-opacity=".38"/></linearGradient></defs>';
-    s+='<path d="'+top+bot+'Z" fill="url(#pband)"/><path d="'+mid+'" fill="none" stroke="var(--gold-ink)" stroke-width="2" stroke-dasharray="2 4" stroke-linecap="round"/>';
+    s+='<path d="'+mid+'" fill="none" stroke="var(--gold-ink)" stroke-width="2" stroke-dasharray="2 4" stroke-linecap="round"/>';
     endLabels.push({y:Y(P.central),t:"≈ "+f(P.central,1)+"%",c:"--gold-ink",bold:true});
   }
   // 2026 series
@@ -524,7 +517,7 @@ function showTip(hr,cx,bw){
   var box=document.getElementById("mainChart"),tip=document.getElementById("tip"),g=box.querySelector("#hover"),X=MAIN.X,Y=MAIN.Y,m=MAIN.m;
   var rows=[],dots="";
   SRC.forEach(function(S){if(!state.src[S.id])return;var arr=series(S.id);if(!arr.length)return;var ex=arr.filter(function(p){return Math.abs(p.h-hr)<0.01;})[0];var lastH=arr[arr.length-1].h;if(ex){rows.push([S.name+" 2026",f(ex.v)+"%",S.c]);dots+='<circle cx="'+X(hr)+'" cy="'+Y(ex.v)+'" r="6" fill="none" stroke="var('+S.c+')" stroke-width="2"/>';}else if(hr<=lastH){var fn=mono([7].concat(arr.map(function(p){return p.h;})),[0].concat(arr.map(function(p){return p.v;})));rows.push([S.name+" 2026","≈ "+f(fn(hr),1)+"%",S.c]);}});
-  if(MAIN.P&&hr>=MAIN.P.h){var q=projPath(MAIN.P,hr);rows.push(["Procena","≈ "+f(q.mid,1)+"%","--gold-ink"]);}
+  if(MAIN.P&&hr>=MAIN.P.h){var q=projPath(MAIN.P,hr);rows.push(["Ako se zadrži","≈ "+f(q.mid,1)+"%","--gold-ink"]);}
   YEARS.forEach(function(y){if(!state.yrs[y])return;var e=exactHist(y,null,hr%1===0?hr:-1);var v=e?e.v:CURVE[y].fn(hr);rows.push([y+".",(e?"":"≈ ")+f(v,e?2:1)+"%",HIST[y].c]);dots+='<circle cx="'+X(hr)+'" cy="'+Y(v)+'" r="3.5" fill="var('+HIST[y].c+')"/>';});
   g.innerHTML='<line x1="'+X(hr)+'" x2="'+X(hr)+'" y1="'+m.t+'" y2="'+(m.t+MAIN.ih)+'" stroke="var(--ink)" stroke-width="1" opacity=".25"/>'+dots;
   tip.innerHTML='<div class="t">do '+clock(hr)+'</div>'+rows.map(function(r){return '<div class="r" style="--c:var('+r[2]+')"><span><i></i>'+esc(r[0])+'</span><b>'+r[1]+'</b></div>';}).join("");
@@ -603,8 +596,8 @@ function renderRegions(){
   var box=document.getElementById("regChart"),lede=document.getElementById("regLede"),leg=document.getElementById("regLegend"),W=Math.max(280,box.clientWidth);
   var hours={};state.regions.forEach(function(r){hours[+r.hour]=hours[+r.hour]||{};hours[+r.hour][r.region]=+r.value;});
   var hs=Object.keys(hours).map(Number).sort(function(a,b){return a-b;}),h26=hs[hs.length-1];
-  var cur=h26!=null?hours[h26]:null,refH=h26!=null?h26:18,ref=REG2023[refH]||null;
-  lede.textContent=cur?("RIK, izlaznost do "+hh(h26)+(ref?", poređenje sa 2023. u istom satu.":". Za 2023. nema regionalnog podatka za ovaj sat.")):"Čeka se prvi regionalni presek RIK-a. Do tada: kako su regioni glasali 2023. do 18h.";
+  var cur=h26!=null?hours[h26]:null,Lr=latest(),want=h26!=null?h26:(Lr?Lr.h:nowH()),refH=h26!=null?h26:[10,14,18].reduce(function(b,x){return Math.abs(x-want)<Math.abs(b-want)?x:b;},10),ref=REG2023[refH]||null;
+  lede.textContent=cur?("RIK, izlaznost do "+hh(h26)+(ref?", poređenje sa 2023. u istom satu.":". Za 2023. nema regionalnog podatka za ovaj sat.")):"Čeka se prvi regionalni presek RIK-a (u 11.05). Do tada: kako su regioni glasali 2023. do "+refH+"h, najbližeg sata za koji postoje podaci po regionima.";
   var rowH=46,H=REGORD.length*rowH+8,lw=W<420?118:178,iw=W-lw-56,max=0;REGORD.forEach(function(k){max=Math.max(max,(cur&&cur[k])||0,(ref&&ref[k])||0);});max=Math.max(10,Math.ceil((max+3)/10)*10);
   var X=function(v){return lw+v/max*iw;};
   var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Izlaznost po regionima">';
@@ -617,13 +610,13 @@ function renderRegions(){
     if(cv!=null&&rv!=null){s+='<line x1="'+X(rv)+'" x2="'+X(rv)+'" y1="'+(y+3)+'" y2="'+(y+29)+'" stroke="var(--y2023)" stroke-width="3" stroke-linecap="round"/><text class="lbl m" x="'+(X(rv))+'" y="'+(y+41)+'" text-anchor="middle" font-size="10">2023: '+f(rv,1)+'</text>';}
   });
   box.innerHTML=s+'</svg>';
-  leg.innerHTML=cur?'<span style="--c:var(--rik)"><i></i>2026</span><span style="--c:var(--y2023)"><i></i>2023, isti sat (crtica)</span>':'<span style="--c:var(--y2023)"><i></i>2023, do 18h</span>';
+  leg.innerHTML=cur?'<span style="--c:var(--rik)"><i></i>2026</span><span style="--c:var(--y2023)"><i></i>2023, isti sat (crtica)</span>':'<span style="--c:var(--y2023)"><i></i>2023, do '+refH+'h</span>';
 }
 
 // ---------- history ----------
 function renderHist(){
   var box=document.getElementById("histChart"),W=Math.max(300,box.clientWidth),mob=W<560,H=mob?250:290;
-  var L=latest(),F=finalPoint(),P=L?projectFrom(L.h,L.v):null;var data=FINALS.slice();var cur=F?{v:F.v,proj:false}:(P?{v:P.central,lo:P.lo,hi:P.hi,proj:true}:null);
+  var L=latest(),F=finalPoint(),P=L?projectFrom(L.h,L.v):null;var data=FINALS.slice();var cur=F?{v:F.v,proj:false}:(P?{v:P.central,proj:true}:null);
   var n=data.length+1,m={l:30,r:6,t:22,b:28},iw=W-m.l-m.r,ih=H-m.t-m.b,gap=iw/n,bw=Math.min(40,gap*0.66),Y=function(v){return m.t+ih-(v/80)*ih;};
   var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Konačna izlaznost od 1990"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--gold)" opacity=".25"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--gold-ink)" stroke-width="2"/></pattern></defs><g class="ax">';
   [0,20,40,60,80].forEach(function(v){s+='<line class="'+(v?"gl":"base")+'" x1="'+m.l+'" x2="'+(m.l+iw)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(m.l-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+'%</text>';});
@@ -635,8 +628,8 @@ function renderHist(){
     s+='<text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" style="fill:var(--muted);font-size:'+(mob?9:11)+'px;font-family:Manrope">'+(mob?"’"+String(d[0]).slice(2):d[0])+'</text>';});
   var cx=m.l+gap*(n-.5);
   if(cur){var y=Y(cur.v);s+='<rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+(Y(0)-y)+'" rx="4" fill="'+(cur.proj?"url(#hatch)":"var(--rik)")+'" stroke="'+(cur.proj?"var(--gold-ink)":"none")+'" stroke-width="1.5" stroke-dasharray="'+(cur.proj?"3 3":"0")+'"><title>2026: '+(cur.proj?"procena ":"")+f(cur.v,1)+'%</title></rect>';
-    if(cur.proj){s+='<line x1="'+cx+'" x2="'+cx+'" y1="'+Y(cur.hi)+'" y2="'+Y(cur.lo)+'" stroke="var(--ink)" stroke-width="1.5"/><line x1="'+(cx-6)+'" x2="'+(cx+6)+'" y1="'+Y(cur.hi)+'" y2="'+Y(cur.hi)+'" stroke="var(--ink)" stroke-width="1.5"/><line x1="'+(cx-6)+'" x2="'+(cx+6)+'" y1="'+Y(cur.lo)+'" y2="'+Y(cur.lo)+'" stroke="var(--ink)" stroke-width="1.5"/>';}
-    s+='<text class="lbl" x="'+cx+'" y="'+((cur.proj?Y(cur.hi):y)-7)+'" text-anchor="middle" font-size="11">'+(cur.proj?"≈":"")+f(cur.v,1)+'</text>';}
+    if(false){s+='<line x1="'+cx+'" x2="'+cx+'" y1="'+Y(cur.hi)+'" y2="'+Y(cur.lo)+'" stroke="var(--ink)" stroke-width="1.5"/><line x1="'+(cx-6)+'" x2="'+(cx+6)+'" y1="'+Y(cur.hi)+'" y2="'+Y(cur.hi)+'" stroke="var(--ink)" stroke-width="1.5"/><line x1="'+(cx-6)+'" x2="'+(cx+6)+'" y1="'+Y(cur.lo)+'" y2="'+Y(cur.lo)+'" stroke="var(--ink)" stroke-width="1.5"/>';}
+    s+='<text class="lbl" x="'+cx+'" y="'+(y-7)+'" text-anchor="middle" font-size="11">'+(cur.proj?"≈":"")+f(cur.v,1)+'</text>';}
   else{s+='<rect x="'+(cx-bw/2)+'" y="'+Y(58.77)+'" width="'+bw+'" height="'+(Y(0)-Y(58.77))+'" rx="4" fill="none" stroke="var(--muted)" stroke-dasharray="3 3"/><text class="lbl m" x="'+cx+'" y="'+(Y(58.77)-7)+'" text-anchor="middle" font-size="11">?</text>';}
   s+='<text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:'+(mob?9:11)+'px;font-family:Manrope">'+(mob?"’26":"2026")+'</text>';
   box.innerHTML=s+'</svg>';
@@ -645,7 +638,7 @@ function renderHist(){
 function render(){
   renderHero();renderTimeline();renderSources();renderToggles();
   if(state.view==="chart")renderMain();else renderTable();
-  renderDelta();renderTempo();renderScen();renderRegions();renderHist();
+  renderDelta();renderTempo();renderRegions();renderHist();
 }
 
 // ---------- events ----------
@@ -657,7 +650,8 @@ try{var st=localStorage.getItem("odziv_theme");if(st)document.documentElement.se
 themeBtn.addEventListener("click",function(){var n=curTheme()==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("odziv_theme",n);}catch(e){}render();});
 var rt;window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(render,150);});
 document.addEventListener("visibilitychange",function(){if(!document.hidden)load();});
-render();load();setInterval(load,60000);setInterval(function(){renderTimeline();},30000);
+function track(){try{if(location.protocol==="file:")return;var r="";try{r=document.referrer?new URL(document.referrer).hostname:"";}catch(e){}if(r===location.hostname)r="";fetch(SB_URL+"/rest/v1/rpc/izb_view",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_ref:r,p_mobile:innerWidth<700}),keepalive:true}).catch(function(){});}catch(e){}}
+render();load();track();setInterval(load,60000);setInterval(function(){renderTimeline();},30000);
 })();
 </script>
 </body>
