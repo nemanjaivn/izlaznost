@@ -283,7 +283,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
   <section class="card">
     <h2>Kako se računa</h2>
     <div class="method" style="margin-top:12px">
-      <p><b>Izvori.</b> RIK saopštava izlaznost na konferencijama (11.05, 13.05, 15.05, 17.05 i 19.05) za prethodni pun sat. CRTA prati 500 biračkih mesta, a CeSID i Ipsos 750 i objavljuju preseke u 9, 11, 14, 17 i 19 časova. Brojevi se razlikuju jer se razlikuju uzorci i trenutak preseka, pa je svaki izvor prikazan zasebno.</p>
+      <p><b>Izvori.</b> RIK saopštava izlaznost na konferencijama (11.05, 13.05, 15.05, 17.05 i 19.05) za prethodni pun sat. CRTA prati 500 biračkih mesta (konferencije u 16.30 i 20.15), a CeSID i Ipsos 750 i objavljuju preseke za 9, 11, 14, 17 i 19 časova, obično pola sata kasnije. Brojevi se razlikuju jer se razlikuju uzorci i trenutak preseka, pa je svaki izvor prikazan zasebno.</p>
       <p><b>Poređenje.</b> Razlika prema 2023. se računa prema podatku istog izvora u istom satu kad postoji, inače prema RIK-u. Kad tačan podatak za taj sat ne postoji, vrednost je procenjena sa krive između dva poznata preseka i označena sa ≈.</p>
       <p><b>Procena konačne izlaznosti.</b> Na izborima 2022. i 2023. je do 14h glasalo oko 54–55% od svih koji su tog dana izašli, do 16h oko 71–72%, a do 18h oko 87–88%. Te dve godine se tu skoro potpuno poklapaju. Procena pretpostavlja da je i danas tako: konačna izlaznost = trenutna izlaznost / taj udeo. Prikazuje se tek od 14h, jer se jutarnji tok danas previše razlikuje od ranijih izbora da bi raniji broj imao smisla. Ovo je projekcija, a ne zvanični podatak.</p>
       <p><b>Ograničenja.</b> RIK-ovi preseci tokom dana su bez Kosova i Metohije, a konačna izlaznost je ukupna. Za 2020. i 2016. nema potpunih RIK-ovih podataka po satima, pa su njihove krive složene od RIK-a, CRTA-e i CeSID/Ipsosa. Upisanih birača za 2026: 6.451.292 (RIK).</p>
@@ -327,19 +327,18 @@ var REG2023={10:{V:11.61,SZ:8.18,JI:9.53,BG:9.88},14:{V:32.62,SZ:32.13,JI:33.49,
 var FINALS=[[1990,71.49],[1992,69.72],[1993,61.34],[1997,57.47],[2000,57.64],[2003,58.75],[2007,60.62],[2008,61.35],[2012,57.80],[2014,53.09],[2016,56.07],[2020,48.93],[2022,58.60],[2023,58.77]];
 // Release schedule today (hour as decimal), with the cut each one reports
 var EVENTS=[
-  {s:"CESID",t:9.25,cut:9,lab:"CeSID/Ipsos, presek u 9h"},
+  {s:"CESID",t:9.45,cut:9,lab:"CeSID/Ipsos oko 9.30, izlaznost do 9h"},
   {s:"RIK",t:11.083,cut:10,lab:"RIK u 11.05, izlaznost do 10h"},
-  {s:"CESID",t:11.25,cut:11,lab:"CeSID/Ipsos, presek u 11h"},
-  {s:"CRTA",t:12,cut:null,lab:"CRTA, konferencija u 12h"},
+  {s:"CESID",t:11.5,cut:11,lab:"CeSID/Ipsos oko 11.30, izlaznost do 11h"},
   {s:"RIK",t:13.083,cut:12,lab:"RIK u 13.05, izlaznost do 12h"},
-  {s:"CESID",t:14.25,cut:14,lab:"CeSID/Ipsos, presek u 14h"},
+  {s:"CESID",t:14.5,cut:14,lab:"CeSID/Ipsos oko 14.30, izlaznost do 14h"},
   {s:"RIK",t:15.083,cut:14,lab:"RIK u 15.05, izlaznost do 14h"},
-  {s:"CRTA",t:16.5,cut:null,lab:"CRTA, konferencija u 16.30"},
+  {s:"CRTA",t:16.5,cut:16,lab:"CRTA u 16.30, izlaznost do 16h"},
   {s:"RIK",t:17.083,cut:16,lab:"RIK u 17.05, izlaznost do 16h"},
-  {s:"CESID",t:17.25,cut:17,lab:"CeSID/Ipsos, presek u 17h"},
+  {s:"CESID",t:17.5,cut:17,lab:"CeSID/Ipsos oko 17.30, izlaznost do 17h"},
   {s:"RIK",t:19.083,cut:18,lab:"RIK u 19.05, izlaznost do 18h"},
-  {s:"CESID",t:19.25,cut:19,lab:"CeSID/Ipsos, presek u 19h"},
-  {s:"CRTA",t:20.25,cut:null,lab:"CRTA, konferencija u 20.15"}
+  {s:"CESID",t:19.5,cut:19,lab:"CeSID/Ipsos oko 19.30, izlaznost do 19h"},
+  {s:"CRTA",t:20.25,cut:19,lab:"CRTA u 20.15, izlaznost do 19h"}
 ];
 
 var state={points:[],regions:[],updated:null,ok:false,src:{RIK:true,CRTA:true,CESID:true},yrs:{"2023":true,"2022":true,"2020":false,"2016":false},proj:true,view:"chart"};
