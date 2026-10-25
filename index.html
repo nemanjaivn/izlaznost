@@ -115,6 +115,23 @@ section{margin-top:22px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
 .card h2{font-family:Fraunces,serif;font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em}
 .card .lede{color:var(--muted);font-size:14px;margin:4px 0 0}
+.resgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px}
+.rescol{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--surface2)}
+.reshd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.reshd b{color:var(--ink);font-size:15px}
+.reshd .sw{width:10px;height:10px;border-radius:50%}
+.pwrap{position:relative;margin:28px 0 16px}.pbar{display:flex;height:22px;border-radius:7px;overflow:hidden;gap:2px}
+.pmaj{position:absolute;top:-6px;bottom:-6px;border-left:2px dashed var(--ink)}
+.pmajl{position:absolute;top:-22px;font-size:11px;font-weight:700;color:var(--ink2);transform:translateX(-50%);white-space:nowrap}
+.rrow2{display:grid;grid-template-columns:12px minmax(0,1fr) 72px 56px 34px;align-items:center;gap:8px;font-size:14px;padding:4px 0}
+.rrow2 .sw{width:12px;height:12px;border-radius:3px}
+.rrow2 .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rrow2 .bb{height:8px;border-radius:4px;background:var(--grid);overflow:hidden}.rrow2 .bb i{display:block;height:100%;border-radius:4px}
+.rrow2 .pc{font-family:Fraunces,serif;font-weight:600;text-align:right}.rrow2 .st{text-align:right;font-weight:700;color:var(--ink2)}
+.rrow2.out{opacity:.6}
+.reshh{display:grid;grid-template-columns:12px minmax(0,1fr) 72px 56px 34px;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.resnote{color:var(--muted);font-size:12px;margin:12px 0 0}
+@media (max-width:480px){.rrow2,.reshh{grid-template-columns:12px minmax(0,1fr) 40px 54px 30px}.resgrid{grid-template-columns:1fr}}
 .src{position:relative;overflow:hidden}
 .src::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
 .src .name{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700}
@@ -234,6 +251,13 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     </div>
   </div>
 
+  <!-- RESULTS (pojavljuje se tek kad postoje procene) -->
+  <section class="card" id="resSec" hidden>
+    <div class="head"><div><h2>Prve procene rezultata</h2><p class="lede" id="resLede">Procene na uzorku biračkih mesta i preliminarni podaci RIK-a. Zvanični rezultati tek slede.</p></div></div>
+    <div class="resgrid" id="resGrid"></div>
+    <p class="resnote">Mandati su naša okvirna računica (D'Hondt, 250 mandata, cenzus 3%, manjinske liste izuzete od cenzusa uz količnik ×1,35), nisu zvaničan podatak.</p>
+  </section>
+
   <!-- SOURCES -->
   <section class="cards3" id="srcCards" aria-label="Poslednji podaci po izvoru"></section>
 
@@ -308,7 +332,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 "use strict";
 var SB_URL="https://fszezlruwuyzdquomijs.supabase.co";
 var SB_KEY="sb_publishable_1xLOxtE1-5PyZW0zdrjoBg_6000CtCx";
-var VOTERS=6451292,VOTERS23=6500666,BUILD="4";
+var VOTERS=6451292,VOTERS23=6500666,BUILD="5";
 var SRC=[
   {id:"RIK",name:"RIK",full:"Republička izborna komisija",c:"--rik"},
   {id:"CRTA",name:"CRTA",full:"posmatračka misija, 500 biračkih mesta",c:"--crta"},
@@ -390,7 +414,7 @@ function load(){
   var ctl=("AbortController" in window)?new AbortController():null;var to=setTimeout(function(){if(ctl)ctl.abort();},9000);
   return fetch(SB_URL+"/rest/v1/rpc/izb_get",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json"},body:"{}",signal:ctl?ctl.signal:undefined,cache:"no-store"})
   .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
-  .then(function(d){clearTimeout(to);if(d.build&&d.build!==BUILD){try{if(sessionStorage.getItem("odziv_rl")!==d.build){sessionStorage.setItem("odziv_rl",d.build);location.reload();return;}}catch(e){}}state.points=d.points||[];state.regions=d.regions||[];var mx=null;state.points.concat(state.regions).forEach(function(p){if(!mx||p.at>mx)mx=p.at;});state.updated=mx;state.ok=true;state.checked=new Date();try{localStorage.setItem("odziv_cache",JSON.stringify({points:state.points,regions:state.regions,updated:state.updated}));}catch(e){}render();})
+  .then(function(d){clearTimeout(to);if(d.build&&d.build!==BUILD){try{if(sessionStorage.getItem("odziv_rl")!==d.build){sessionStorage.setItem("odziv_rl",d.build);location.reload();return;}}catch(e){}}state.points=d.points||[];state.regions=d.regions||[];state.results=d.results||[];var mx=null;state.points.concat(state.regions).forEach(function(p){if(!mx||p.at>mx)mx=p.at;});state.updated=mx;state.ok=true;state.checked=new Date();try{localStorage.setItem("odziv_cache",JSON.stringify({points:state.points,regions:state.regions,updated:state.updated}));}catch(e){}render();})
   .catch(function(){clearTimeout(to);state.ok=false;state.checked=new Date();render();});
 }
 
@@ -699,8 +723,31 @@ function renderHist(){
   box.innerHTML=s+'</svg>';
 }
 
+var RES_COLORS=["#E0A82E","#8B76DF","#139AA3","#E8455A","#4A90D9","#B98AF0","#3FBF9A","#E58A7A","#8F88A6"];
+function dhondt(lists){var q={},seats={};lists.forEach(function(l,i){if(l.inn){q[i]=l.pct*(l.minority?1.35:1);seats[i]=0;}});var ks=Object.keys(q);if(!ks.length)return seats;for(var n=0;n<250;n++){var best=null,bv=-1;ks.forEach(function(k){var v=q[k]/(seats[k]+1);if(v>bv){bv=v;best=k;}});seats[best]++;}return seats;}
+function renderResults(){
+  var sec=document.getElementById("resSec"),R=state.results||[];
+  if(!R.length){sec.hidden=true;return;}sec.hidden=false;
+  var order={"CESID":1,"CRTA":2,"RIK":3};R=R.slice().sort(function(a,b){return (order[a.source]||9)-(order[b.source]||9);});
+  var html="";
+  R.forEach(function(r){
+    var inv=2,L=(r.lists||[]).map(function(l,i){return {name:l.name,pct:+l.pct,minority:!!l.minority,other:/^ostal/i.test(l.name),c:l.color||RES_COLORS[i%RES_COLORS.length]};});
+    L.forEach(function(l){l.inn=!l.other&&(l.minority||l.pct*(1-inv/100)>=3);});
+    var st=dhondt(L);L.forEach(function(l,i){l.seats=st[i]||0;});
+    var rk=L.slice().sort(function(a,b){return (a.other?1:0)-(b.other?1:0)||b.pct-a.pct;});
+    var src=SRCMAP[r.source]||{c:"--muted",name:r.source};
+    var seg=rk.filter(function(l){return l.seats>0;}).map(function(l){return '<div style="flex:'+l.seats+';background:'+l.c+'" title="'+esc(l.name)+': '+l.seats+'"></div>';}).join("");
+    var mx=Math.max.apply(null,rk.map(function(l){return l.pct;}).concat([1]));
+    html+='<div class="rescol"><div class="reshd"><span class="sw" style="background:var('+src.c+')"></span><b>'+esc(r.label)+'</b>'+(r.at_label?'<span>· '+esc(r.at_label)+'</span>':'')+(r.processed!=null?'<span>· obrađeno '+f(+r.processed,1)+'% BM</span>':'')+(r.turnout!=null?'<span>· izlaznost '+f(+r.turnout,1)+'%</span>':'')+'</div>'
+      +'<div class="pwrap"><div class="pbar">'+seg+'</div><div class="pmaj" style="left:50.4%"></div><div class="pmajl" style="left:50.4%">126 = većina</div></div>'
+      +'<div class="reshh"><span></span><span>Lista</span><span></span><span style="text-align:right">%</span><span style="text-align:right">Mand.</span></div>'
+      +rk.map(function(l){return '<div class="rrow2'+(l.inn?'':' out')+'"><span class="sw" style="background:'+l.c+'"></span><span class="nm" title="'+esc(l.name)+'">'+esc(l.name)+(l.minority?' <small style="color:var(--muted);font-weight:600">manj.</small>':'')+'</span><span class="bb"><i style="width:'+(l.pct/mx*100).toFixed(1)+'%;background:'+l.c+'"></i></span><span class="pc">'+f(l.pct,1)+'%</span><span class="st">'+(l.inn?l.seats:'–')+'</span></div>';}).join("")
+      +(r.note?'<p class="resnote">'+esc(r.note)+'</p>':'')+(r.url?'<p class="resnote"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Izvor</a></p>':'')+'</div>';
+  });
+  document.getElementById("resGrid").innerHTML=html;
+}
 function render(){
-  renderHero();renderTimeline();renderSources();renderToggles();
+  renderResults();renderHero();renderTimeline();renderSources();renderToggles();
   if(state.view==="chart")renderMain();else renderTable();
   renderDelta();renderTempo();renderRegions();renderHist();
 }
