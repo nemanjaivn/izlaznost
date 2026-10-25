@@ -280,7 +280,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     <div class="method" style="margin-top:12px">
       <p><b>Izvori.</b> RIK saopštava izlaznost na konferencijama (11.05, 13.05, 15.05, 17.05 i 19.05) za prethodni pun sat. CRTA prati 500 biračkih mesta, a CeSID i Ipsos 750 i objavljuju preseke u 9, 11, 14, 17 i 19 časova. Brojevi se razlikuju jer se razlikuju uzorci i trenutak preseka, pa je svaki izvor prikazan zasebno.</p>
       <p><b>Poređenje.</b> Razlika prema 2023. se računa prema podatku istog izvora u istom satu kad postoji, inače prema RIK-u. Kad tačan podatak za taj sat ne postoji, vrednost je procenjena sa krive između dva poznata preseka i označena sa ≈.</p>
-      <p><b>Procena konačne izlaznosti.</b> Poslednji podatak za 2026. se množi odnosom „konačna izlaznost / izlaznost u tom satu" sa ranijih izbora. Glavna vrednost je prosek scenarija 2022. i 2023. Raspon obuhvata sve scenarije (i 2020. i 2016.) i dodatnu marginu koja se smanjuje kako dan odmiče. Ovo je statistička projekcija, a ne prognoza: ako se ponašanje birača razlikuje od ranijih izbora, konačan broj može izaći van raspona.</p>
+      <p><b>Procena konačne izlaznosti.</b> Za svake ranije izbore se pita: gde bi 2026. završila da ostatak dana teče kao tada? Ujutru se pretpostavlja da se razlika u procentnim poenima zadržava do kraja dana, a kako dan odmiče (od 10 do 16h) model postepeno prelazi na pretpostavku da glasanje teče istim relativnim tempom („konačna / izlaznost u tom satu"). Glavna vrednost je prosek scenarija 2022. i 2023. Raspon obuhvata sve scenarije (i 2020. i 2016.) i dodatnu marginu koja se smanjuje kako dan odmiče. Ovo je statistička projekcija, a ne prognoza: ako se ponašanje birača razlikuje od ranijih izbora, konačan broj može izaći van raspona.</p>
       <p><b>Ograničenja.</b> RIK-ovi preseci tokom dana su bez Kosova i Metohije, a konačna izlaznost je ukupna. Za 2020. i 2016. nema potpunih RIK-ovih podataka po satima, pa su njihove krive složene od RIK-a, CRTA-e i CeSID/Ipsosa. Upisanih birača za 2026: 6.451.292 (RIK).</p>
     </div>
     <h3 style="font-size:14px;margin:16px 0 6px">Izvori podataka</h3>
@@ -310,7 +310,7 @@ var SRC=[
 var SRCMAP={};SRC.forEach(function(s){SRCMAP[s.id]=s;});
 // Historical hourly turnout (% of registered voters). RIK cuts exclude Kosovo and Metohija.
 var HIST={
-  "2023":{date:"17. decembar 2023.",final:58.77,c:"--y2023",dash:"7 5",pts:{RIK:{10:9.94,12:21.33,14:32.38,16:42.36,18:51.93},CRTA:{10:9.8,19:55.5},CESID:{}}},
+  "2023":{date:"17. decembar 2023.",final:58.77,c:"--y2023",dash:"7 5",pts:{RIK:{10:9.94,12:21.33,14:32.38,16:42.36,18:51.93},CRTA:{10:9.8,19:55.5},CESID:{9:5.3}}},
   "2022":{date:"3. april 2022.",final:58.60,c:"--y2022",dash:"3 4",pts:{RIK:{10:9.59,12:20.52,14:31.56,16:41.56,18:50.82},CRTA:{10:9.9,16:42.1,19:55.1},CESID:{9:5.1,11:14.1,17:45.1}}},
   "2020":{date:"21. jun 2020.",final:48.93,c:"--y2020",dash:"1 4",pts:{RIK:{18:40.82},CRTA:{10:9.1,12:18.3,14:27.0,19:45.5},CESID:{9:5.2,17:37.2,19:44.9}}},
   "2016":{date:"24. april 2016.",final:56.07,c:"--y2016",dash:"10 3 2 3",pts:{RIK:{18:47.68},CRTA:{10:9.4,16:39.6,19:53.1},CESID:{17:43.5}}}
@@ -367,8 +367,12 @@ function finalPoint(){var fp=state.points.filter(function(p){return p.final;});i
 function latest(){var best=null;state.points.forEach(function(p){if(p.final)return;var h=+p.hour;if(!best||h>best.h||(h===best.h&&p.source==="RIK"))best={h:h,v:+p.value,s:p.source};});return best;}
 function primarySource(){var c={};SRC.forEach(function(s){c[s.id]=series(s.id).length;});var best="RIK";SRC.forEach(function(s){if(c[s.id]>c[best])best=s.id;});return c[best]?best:null;}
 
-function projectFrom(h,v){if(!v||h<8.5)return null;var sc={};YEARS.forEach(function(y){var c=CURVE[y].fn(h);if(c>0.5)sc[y]=v*HIST[y].final/c;});var cen=[];["2023","2022"].forEach(function(y){if(sc[y])cen.push(sc[y]);});if(!cen.length)return null;var central=cen.reduce(function(a,b){return a+b;},0)/cen.length;var vals=Object.keys(sc).map(function(k){return sc[k];});var m=0.3*(20-h);var lo=Math.max(v,Math.min.apply(null,vals)-m),hi=Math.min(100,Math.max.apply(null,vals)+m);return {h:h,v:v,central:Math.min(100,central),lo:lo,hi:hi,sc:sc};}
-function projPath(P,t){var c=[],all=[];YEARS.forEach(function(y){var a=CURVE[y].fn(P.h),b=CURVE[y].fn(t);if(a>0.5){var val=P.v*b/a;all.push(val);if(y==="2023"||y==="2022")c.push(val);}});var k=(t-P.h)/(20-P.h),m=0.3*(20-P.h)*k;var mid=c.reduce(function(a,b){return a+b;},0)/c.length;return {mid:mid,lo:Math.max(P.v,Math.min.apply(null,all)-m),hi:Math.min(100,Math.max.apply(null,all)+m)};}
+// Blend: early in the day assume the gap vs. each past election holds (additive);
+// later assume the same relative pace for the rest of the day (multiplicative).
+function wMult(h){return Math.max(0,Math.min(1,(h-10)/6));}
+function scenAt(y,P,t){var a=CURVE[y].fn(P.h),b=CURVE[y].fn(t);if(a<0.5)return null;var add=b+(P.v-a),mul=P.v*b/a,w=wMult(P.h);return Math.max(P.v,Math.min(95,(1-w)*add+w*mul));}
+function projectFrom(h,v){if(!v||h<8.5)return null;var P={h:h,v:v},sc={};YEARS.forEach(function(y){var x=scenAt(y,P,20);if(x!=null)sc[y]=x;});var cen=[];["2023","2022"].forEach(function(y){if(sc[y]!=null)cen.push(sc[y]);});if(!cen.length)return null;var vals=Object.keys(sc).map(function(k){return sc[k];});var m=0.3*(20-h);P.central=cen.reduce(function(a,b){return a+b;},0)/cen.length;P.lo=Math.max(v,Math.min.apply(null,vals)-m);P.hi=Math.min(98,Math.max.apply(null,vals)+m);P.sc=sc;return P;}
+function projPath(P,t){var c=[],all=[];YEARS.forEach(function(y){var x=scenAt(y,P,t);if(x==null)return;all.push(x);if(y==="2023"||y==="2022")c.push(x);});var k=(t-P.h)/(20-P.h),m=0.3*(20-P.h)*k;return {mid:c.reduce(function(a,b){return a+b;},0)/c.length,lo:Math.max(P.v,Math.min.apply(null,all)-m),hi:Math.min(98,Math.max.apply(null,all)+m)};}
 
 // ---------- data ----------
 function load(){
