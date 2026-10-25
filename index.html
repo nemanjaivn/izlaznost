@@ -218,7 +218,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
         <div class="hnote" id="hNote"></div>
       </div>
       <div class="proj" id="projBox">
-        <h3 id="projTitle">Procena konačne izlaznosti</h3>
+        <h3 id="projTitle">Poređenje sa 2023.</h3>
         <svg class="gauge" id="gauge" viewBox="0 0 300 170" aria-hidden="true"></svg>
         <div class="projval" id="projVal">—</div>
         <div class="projrange" id="projRange"></div>
@@ -276,7 +276,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 
   <section class="card">
     <h2>Izlaznost od 1990.</h2>
-    <p class="lede">Konačna izlaznost na parlamentarnim izborima u Srbiji. Za 2026. se od 14h prikazuje projekcija, a posle zatvaranja konačan podatak.</p>
+    <p class="lede">Konačna izlaznost na parlamentarnim izborima u Srbiji. Za 2026. se prikazuje konačan podatak kad ga RIK objavi.</p>
     <div class="chartbox" id="histChart"></div>
   </section>
 
@@ -285,7 +285,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     <div class="method" style="margin-top:12px">
       <p><b>Izvori.</b> RIK saopštava izlaznost na konferencijama (11.05, 13.05, 15.05, 17.05 i 19.05) za prethodni pun sat. CRTA prati 500 biračkih mesta (konferencije u 16.30 i 20.15), a CeSID i Ipsos 750 i objavljuju preseke za 9, 11, 14, 17 i 19 časova, obično pola sata kasnije. Brojevi se razlikuju jer se razlikuju uzorci i trenutak preseka, pa je svaki izvor prikazan zasebno.</p>
       <p><b>Poređenje.</b> Razlika prema 2023. se računa prema podatku istog izvora u istom satu kad postoji, inače prema RIK-u. Kad tačan podatak za taj sat ne postoji, vrednost je procenjena sa krive između dva poznata preseka i označena sa ≈.</p>
-      <p><b>Procena konačne izlaznosti.</b> Na izborima 2022. i 2023. je do 14h glasalo oko 54–55% od svih koji su tog dana izašli, do 16h oko 71–72%, a do 18h oko 87–88%. Te dve godine se tu skoro potpuno poklapaju. Procena pretpostavlja da je i danas tako: konačna izlaznost = trenutna izlaznost / taj udeo. Prikazuje se tek od 14h, jer se jutarnji tok danas previše razlikuje od ranijih izbora da bi raniji broj imao smisla. Ovo je projekcija, a ne zvanični podatak.</p>
+      <p><b>Zašto nema procene konačne izlaznosti.</b> Na izborima 2022. i 2023. se raspodela glasanja kroz dan skoro potpuno poklapala, pa bi se iz udela dana mogla proceniti konačna izlaznost. Danas je glasanje mnogo više pomereno ka jutru, pa bi takva računica dala nerealno visok broj. Zato sajt prikazuje samo stvarne preseke i poređenje sa ranijim izborima.</p>
       <p><b>Ograničenja.</b> RIK-ovi preseci tokom dana su bez Kosova i Metohije, a konačna izlaznost je ukupna. Za 2020. i 2016. nema potpunih RIK-ovih podataka po satima, pa su njihove krive složene od RIK-a, CRTA-e i CeSID/Ipsosa. Upisanih birača za 2026: 6.451.292 (RIK).</p>
     </div>
     <h3 style="font-size:14px;margin:16px 0 6px">Izvori podataka</h3>
@@ -375,7 +375,7 @@ function primarySource(){var c={};SRC.forEach(function(s){c[s.id]=series(s.id).l
 // Blend: early in the day assume the gap vs. each past election holds (additive);
 // later assume the same relative pace for the rest of the day (multiplicative).
 function wMult(h){return Math.max(0,Math.min(1,(h-10)/6));}
-var PROJ_FROM=14;
+var PROJ_FROM=99; // projekcija isključena: današnji tok je previše pomeren ka jutru da bi poređenje udela dana imalo smisla
 function share(h){var a=0,n=0;["2023","2022"].forEach(function(y){a+=CURVE[y].fn(h)/HIST[y].final;n++;});return a/n;}
 function scenAt(y,P,t){var a=CURVE[y].fn(P.h),b=CURVE[y].fn(t);if(a<0.5)return null;return Math.max(P.v,Math.min(95,P.v*b/a));}
 // Range is symmetric around the central value: spread = largest gap between the central
@@ -423,8 +423,8 @@ function renderHero(){
   else if(L){var r=ref2023(L.s,L.h),n26=L.v/100*VOTERS,n23=r.v/100*VOTERS23,mx=Math.max(L.v,r.v);pt.textContent="Do "+hh(L.h)+": 2026. naspram 2023.";showGauge(false);
     pv.innerHTML='<div class="cmp2"><div><span>2026.</span><div class="b"><i style="width:'+(L.v/mx*100).toFixed(1)+'%;background:var(--gold)"></i></div><b>'+f(L.v,1)+'%</b></div><div><span>2023.</span><div class="b"><i style="width:'+(r.v/mx*100).toFixed(1)+'%;background:rgba(255,255,255,.45)"></i></div><b>'+f(r.v,1)+'%</b></div></div>';
     pr.innerHTML="Glasalo je oko <b>"+hilj(n26)+"</b> birača, "+(n23>0?f(n26/n23,1)+" puta više":"više")+" nego 2023. u isto vreme ("+hilj(n23)+").";
-    pn.textContent="Procena konačne izlaznosti stiže posle preseka u 14h, kad prođe više od pola dana.";}
-  else{pt.textContent="Procena konačne izlaznosti";showGauge(false);pv.textContent="—";pr.textContent="pojaviće se posle preseka u 14h";pn.textContent="2023: "+f(58.77,1)+"% · 2022: "+f(58.60,1)+"%";}
+    pn.textContent="Konačna izlaznost: 2023. 58,8% · rekord 1990. 71,5%";}
+  else{pt.textContent="Poređenje sa 2023.";showGauge(false);pv.textContent="—";pr.textContent="pojaviće se posle prvog preseka";pn.textContent="2023: "+f(58.77,1)+"% · 2022: "+f(58.60,1)+"%";}
 }
 function showGauge(on){document.getElementById("gauge").style.display=on?"block":"none";var pv=document.getElementById("projVal");pv.style.marginTop=on?"":"12px";}
 function drawGauge(v,lo,hi){
