@@ -244,9 +244,10 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 
   <section class="grid2">
     <div class="card">
-      <h2>Razlika prema 2023.</h2>
-      <p class="lede">Procentni poeni više ili manje nego u isto vreme na izborima 17. decembra 2023.</p>
+      <h2>Razlika prema ranijim izborima</h2>
+      <p class="lede">Procentni poeni više ili manje nego u isto vreme na ranijim izborima.</p>
       <div class="chartbox" id="deltaChart"></div>
+      <div class="legend" id="deltaLegend"></div>
     </div>
     <div class="card">
       <h2>Tempo glasanja</h2>
@@ -545,42 +546,52 @@ function renderTable(){
 }
 
 // ---------- delta chart ----------
+function yearVal(y,s,h){var e=exactHist(y,s,h);return e?{v:e.v,ex:true}:{v:CURVE[y].fn(h),ex:false};}
+function yearLegend(extra){return (extra||"")+YEARS.map(function(y){return '<span style="--c:var('+HIST[y].c+')"><i></i>'+y+'.'+(y==="2020"?" (bojkot)":"")+'</span>';}).join("");}
 function renderDelta(){
-  var box=document.getElementById("deltaChart"),W=Math.max(280,box.clientWidth),H=240;
-  var items=[];SRC.forEach(function(S){series(S.id).forEach(function(p){var r=ref2023(S.id,p.h);items.push({h:p.h,s:S.id,d:p.v-r.v,ex:r.exact});});});
-  items.sort(function(a,b){return a.h-b.h||(a.s<b.s?-1:1);});
-  if(!items.length){box.innerHTML='<div class="empty-note">Pojaviće se kad stigne prvi podatak za 2026. Svaki stubić pokazuje da li se glasa više (gore) ili manje (dole) nego 2023. u istom satu.</div>';return;}
-  var mx=Math.max(1,Math.ceil(Math.max.apply(null,items.map(function(i){return Math.abs(i.d);}))+0.5));
-  var m={l:34,r:8,t:18,b:42},iw=W-m.l-m.r,ih=H-m.t-m.b,Y=function(v){return m.t+ih/2-(v/mx)*(ih/2);};
-  var bw=Math.min(36,iw/items.length*0.62),gap=iw/items.length;
-  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Razlika prema 2023"><g class="ax">';
+  var box=document.getElementById("deltaChart"),leg=document.getElementById("deltaLegend"),W=Math.max(280,box.clientWidth),H=250;
+  var pts=[];SRC.forEach(function(S){series(S.id).forEach(function(p){pts.push({h:p.h,s:S.id,v:p.v});});});
+  pts.sort(function(a,b){return a.h-b.h||(a.s<b.s?-1:1);});
+  if(!pts.length){box.innerHTML='<div class="empty-note">Pojaviće se kad stigne prvi podatak za 2026. Svaki stubić pokazuje da li se glasa više (gore) ili manje (dole) nego na ranijim izborima u istom satu.</div>';leg.innerHTML="";return;}
+  if(pts.length>4)pts=pts.slice(-4);
+  var groups=pts.map(function(p){return {p:p,d:YEARS.map(function(y){var r=yearVal(y,p.s,p.h);return {y:y,d:p.v-r.v,ex:r.ex};})};});
+  var all=[];groups.forEach(function(g){g.d.forEach(function(x){all.push(Math.abs(x.d));});});
+  var mx=Math.max(2,Math.ceil(Math.max.apply(null,all)+1));
+  var m={l:34,r:8,t:20,b:40},iw=W-m.l-m.r,ih=H-m.t-m.b,Y=function(v){return m.t+ih/2-(v/mx)*(ih/2);};
+  var gw=iw/groups.length,bw=Math.max(8,Math.min(26,gw*0.8/YEARS.length-3));
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Razlika prema ranijim izborima"><g class="ax">';
   [-mx,0,mx].forEach(function(v){s+='<line class="'+(v?"gl":"base")+'" x1="'+m.l+'" x2="'+(m.l+iw)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(m.l-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+(v>0?"+":v<0?"−":"")+Math.abs(v)+'</text>';});
   s+='</g>';
-  items.forEach(function(it,i){var cx=m.l+gap*(i+.5),y0=Y(0),y1=Y(it.d),top=Math.min(y0,y1),hgt=Math.max(2,Math.abs(y1-y0));var c=SRCMAP[it.s].c;
-    s+='<rect x="'+(cx-bw/2)+'" y="'+top+'" width="'+bw+'" height="'+hgt+'" rx="4" fill="var('+c+')"><title>'+esc(SRCMAP[it.s].name+" do "+hh(it.h)+": "+fpp(it.d)+" p.p."+(it.ex?"":" (≈)"))+'</title></rect>';
-    s+='<text class="lbl" x="'+cx+'" y="'+(it.d>=0?top-5:top+hgt+13)+'" text-anchor="middle" font-size="11">'+fpp(it.d)+(it.ex?"":"≈")+'</text>';
-    s+='<text class="ax" x="'+cx+'" y="'+(H-22)+'" text-anchor="middle" style="fill:var(--muted);font-size:11px">'+hh(it.h)+'</text><text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" style="fill:var(--muted);font-size:10px">'+(it.s==="CESID"?"CeSID":it.s)+'</text>';});
+  groups.forEach(function(g,gi){var cx=m.l+gw*(gi+.5),tot=YEARS.length*bw+(YEARS.length-1)*3,x0=cx-tot/2;
+    g.d.forEach(function(x,i){var bx=x0+i*(bw+3),y0=Y(0),y1=Y(x.d),top=Math.min(y0,y1),hgt=Math.max(2,Math.abs(y1-y0));
+      s+='<rect x="'+bx+'" y="'+top+'" width="'+bw+'" height="'+hgt+'" rx="3" fill="var('+HIST[x.y].c+')"'+(x.y==="2020"?' opacity=".6"':'')+'><title>'+esc(x.y+": "+fpp(x.d)+" p.p."+(x.ex?"":" (≈)"))+'</title></rect>';
+      if(bw>=14||groups.length===1)s+='<text class="lbl" x="'+(bx+bw/2)+'" y="'+(x.d>=0?top-5:top+hgt+12)+'" text-anchor="middle" font-size="'+(bw<20?9:10)+'">'+fpp(x.d)+(x.ex?"":"≈")+'</text>';});
+    s+='<text x="'+cx+'" y="'+(H-22)+'" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-family:Manrope">do '+hh(g.p.h)+'</text><text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-family:Manrope">'+(g.p.s==="CESID"?"CeSID/Ipsos":g.p.s)+' '+f(g.p.v,1)+'%</text>';});
   box.innerHTML=s+'</svg>';
+  leg.innerHTML=yearLegend()+'<span>≈ procena sa krive kad za taj sat nema tačnog podatka</span>';
 }
 
 // ---------- tempo chart ----------
 function renderTempo(){
-  var box=document.getElementById("tempoChart"),W=Math.max(280,box.clientWidth),H=240,ps=primarySource(),leg=document.getElementById("tempoLegend");
+  var box=document.getElementById("tempoChart"),W=Math.max(280,box.clientWidth),H=250,ps=primarySource(),leg=document.getElementById("tempoLegend");
   var arr=ps?series(ps):[],ivs=[];
-  if(arr.length){var prev={h:7,v:0};arr.forEach(function(p){ivs.push({a:prev.h,b:p.h,r:(p.v-prev.v)/(p.h-prev.h),ref:(CURVE["2023"].fn(p.h)-CURVE["2023"].fn(prev.h))/(p.h-prev.h)});prev=p;});}
-  else{var X0=[7].concat(CURVE["2023"].xs.filter(function(x){return x>7&&HIST["2023"].pts.RIK[x]!=null;})).concat([20]);for(var i=1;i<X0.length;i++)ivs.push({a:X0[i-1],b:X0[i],r:null,ref:(CURVE["2023"].fn(X0[i])-CURVE["2023"].fn(X0[i-1]))/(X0[i]-X0[i-1])});}
-  var mx=Math.max(1,Math.max.apply(null,ivs.map(function(v){return Math.max(v.r||0,v.ref);})));mx=Math.ceil(mx+0.5);
-  var m={l:30,r:8,t:18,b:28},iw=W-m.l-m.r,ih=H-m.t-m.b,Y=function(v){return m.t+ih-(v/mx)*ih;},gap=iw/ivs.length,bw=Math.min(22,gap*0.3);
+  if(arr.length){var prev={h:7,v:0};arr.forEach(function(p){ivs.push({a:prev.h,b:p.h,r:(p.v-prev.v)/(p.h-prev.h)});prev=p;});}
+  else{[7,10,12,14,16,18,20].forEach(function(x,i,A){if(i)ivs.push({a:A[i-1],b:x,r:null});});}
+  if(ivs.length>4)ivs=ivs.slice(-4);
+  ivs.forEach(function(iv){iv.yr=YEARS.map(function(y){return {y:y,r:(CURVE[y].fn(iv.b)-CURVE[y].fn(iv.a))/(iv.b-iv.a)};});});
+  var mx=1;ivs.forEach(function(iv){mx=Math.max(mx,iv.r||0);iv.yr.forEach(function(x){mx=Math.max(mx,x.r);});});mx=Math.ceil(mx+0.5);
+  var nb=YEARS.length+(arr.length?1:0);
+  var m={l:30,r:8,t:20,b:28},iw=W-m.l-m.r,ih=H-m.t-m.b,Y=function(v){return m.t+ih-(v/mx)*ih;},gw=iw/ivs.length,bw=Math.max(7,Math.min(22,gw*0.8/nb-3));
   var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Tempo glasanja po satu"><g class="ax">';
   for(var v=0;v<=mx;v+=(mx>6?2:1)){s+='<line class="'+(v?"gl":"base")+'" x1="'+m.l+'" x2="'+(m.l+iw)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(m.l-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+'</text>';}
   s+='</g>';
   var c26=ps?SRCMAP[ps].c:"--rik";
-  ivs.forEach(function(iv,i){var cx=m.l+gap*(i+.5);var both=iv.r!=null;
-    var x1=both?cx-bw-1:cx-bw/2;s+='<rect x="'+x1+'" y="'+Y(iv.ref)+'" width="'+bw+'" height="'+(Y(0)-Y(iv.ref))+'" rx="4" fill="var(--y2023)" opacity=".55"><title>2023: '+f(iv.ref,1)+' % na sat (≈)</title></rect>';
-    if(both){s+='<rect x="'+(cx+1)+'" y="'+Y(Math.max(0,iv.r))+'" width="'+bw+'" height="'+(Y(0)-Y(Math.max(0,iv.r)))+'" rx="4" fill="var('+c26+')"><title>2026: '+f(iv.r,1)+' % na sat</title></rect><text class="lbl" x="'+(cx+1+bw/2)+'" y="'+(Y(Math.max(0,iv.r))-5)+'" text-anchor="middle" font-size="11">'+f(iv.r,1)+'</text>';}
+  ivs.forEach(function(iv,gi){var cx=m.l+gw*(gi+.5),tot=nb*bw+(nb-1)*3,x0=cx-tot/2,i=0;
+    iv.yr.forEach(function(x){var bx=x0+(i++)*(bw+3);s+='<rect x="'+bx+'" y="'+Y(x.r)+'" width="'+bw+'" height="'+(Y(0)-Y(x.r))+'" rx="3" fill="var('+HIST[x.y].c+')"'+(x.y==="2020"?' opacity=".6"':' opacity=".85"')+'><title>'+x.y+': '+f(x.r,1)+' % na sat (≈)</title></rect>';});
+    if(iv.r!=null){var bx=x0+i*(bw+3),rv=Math.max(0,iv.r);s+='<rect x="'+bx+'" y="'+Y(rv)+'" width="'+bw+'" height="'+(Y(0)-Y(rv))+'" rx="3" fill="var('+c26+')"><title>2026: '+f(iv.r,1)+' % na sat</title></rect><text class="lbl" x="'+(bx+bw/2)+'" y="'+(Y(rv)-5)+'" text-anchor="middle" font-size="11">'+f(iv.r,1)+'</text>';}
     s+='<text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-family:Manrope">'+iv.a+'–'+(Math.round(iv.b*100)/100)+'h</text>';});
   box.innerHTML=s+'</svg>';
-  leg.innerHTML=(ps?'<span style="--c:var('+c26+')"><i></i>2026 ('+esc(SRCMAP[ps].name)+')</span>':'')+'<span style="--c:var(--y2023)"><i style="opacity:.55"></i>2023 (procenat birača na sat)</span>'+(ps?"":'<span>Za 2026. čeka se prvi presek.</span>');
+  leg.innerHTML=yearLegend(ps?'<span style="--c:var('+c26+')"><i></i>2026 ('+esc(SRCMAP[ps].name)+')</span>':'')+(ps?"":'<span>Za 2026. čeka se prvi presek.</span>');
 }
 
 // ---------- scenarios ----------
