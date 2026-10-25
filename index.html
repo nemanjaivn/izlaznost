@@ -80,8 +80,9 @@ a{color:inherit}
 .proj{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:18px 18px 16px;backdrop-filter:blur(6px)}
 .proj h3{margin:0;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.7)}
 .gauge{display:block;width:100%;height:auto;margin:6px 0 0}
+.cmp2{display:grid;gap:10px;font-family:Manrope,sans-serif;font-size:14px;text-align:left}.cmp2>div{display:grid;grid-template-columns:48px 1fr 54px;gap:10px;align-items:center}.cmp2 .b{height:14px;border-radius:7px;background:rgba(255,255,255,.1);overflow:hidden}.cmp2 .b i{display:block;height:100%;border-radius:7px}.cmp2 b{font-family:Fraunces,serif;font-size:20px;text-align:right}
 .projval{font-family:Fraunces,serif;font-size:44px;font-weight:600;line-height:1;text-align:center;margin-top:-42px;font-variant-numeric:tabular-nums}
-.projrange{text-align:center;color:rgba(255,255,255,.72);font-size:14px;margin-top:6px}
+.projrange{text-align:center;color:rgba(255,255,255,.8);font-size:14px;margin-top:10px;line-height:1.45}
 .projnote{font-size:12px;color:rgba(255,255,255,.55);text-align:center;margin-top:8px}
 
 /* timeline */
@@ -207,7 +208,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
         <div class="hnote" id="hNote"></div>
       </div>
       <div class="proj" id="projBox">
-        <h3 id="projTitle">Ako se tempo zadrži</h3>
+        <h3 id="projTitle">Procena konačne izlaznosti</h3>
         <svg class="gauge" id="gauge" viewBox="0 0 300 170" aria-hidden="true"></svg>
         <div class="projval" id="projVal">—</div>
         <div class="projrange" id="projRange"></div>
@@ -264,7 +265,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 
   <section class="card">
     <h2>Izlaznost od 1990.</h2>
-    <p class="lede">Konačna izlaznost na parlamentarnim izborima u Srbiji. Za 2026. je prikazano gde bi izlaznost bila ako se današnji tempo zadrži, dok ne stigne konačan podatak.</p>
+    <p class="lede">Konačna izlaznost na parlamentarnim izborima u Srbiji. Za 2026. se od 14h prikazuje projekcija, a posle zatvaranja konačan podatak.</p>
     <div class="chartbox" id="histChart"></div>
   </section>
 
@@ -273,7 +274,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
     <div class="method" style="margin-top:12px">
       <p><b>Izvori.</b> RIK saopštava izlaznost na konferencijama (11.05, 13.05, 15.05, 17.05 i 19.05) za prethodni pun sat. CRTA prati 500 biračkih mesta, a CeSID i Ipsos 750 i objavljuju preseke u 9, 11, 14, 17 i 19 časova. Brojevi se razlikuju jer se razlikuju uzorci i trenutak preseka, pa je svaki izvor prikazan zasebno.</p>
       <p><b>Poređenje.</b> Razlika prema 2023. se računa prema podatku istog izvora u istom satu kad postoji, inače prema RIK-u. Kad tačan podatak za taj sat ne postoji, vrednost je procenjena sa krive između dva poznata preseka i označena sa ≈.</p>
-      <p><b>„Ako se zadrži“.</b> Ovo nije prognoza, nego odgovor na jedno pitanje: gde bi izlaznost završila da se današnji tempo nastavi? Ujutru se uzima da razlika u procentnim poenima prema 2022. i 2023. ostaje ista do 20h, a od 10 do 16h računica postepeno prelazi na pretpostavku da ostatak dana teče istim relativnim tempom kao tada. Prikazan je prosek za 2022. i 2023.</p>
+      <p><b>Procena konačne izlaznosti.</b> Na izborima 2022. i 2023. je do 14h glasalo oko 54–55% od svih koji su tog dana izašli, do 16h oko 71–72%, a do 18h oko 87–88%. Te dve godine se tu skoro potpuno poklapaju. Procena pretpostavlja da je i danas tako: konačna izlaznost = trenutna izlaznost / taj udeo. Prikazuje se tek od 14h, jer se jutarnji tok danas previše razlikuje od ranijih izbora da bi raniji broj imao smisla. Ovo je projekcija, a ne zvanični podatak.</p>
       <p><b>Ograničenja.</b> RIK-ovi preseci tokom dana su bez Kosova i Metohije, a konačna izlaznost je ukupna. Za 2020. i 2016. nema potpunih RIK-ovih podataka po satima, pa su njihove krive složene od RIK-a, CRTA-e i CeSID/Ipsosa. Upisanih birača za 2026: 6.451.292 (RIK).</p>
     </div>
     <h3 style="font-size:14px;margin:16px 0 6px">Izvori podataka</h3>
@@ -294,7 +295,7 @@ footer{color:var(--muted);font-size:12px;padding:28px 0 40px;text-align:center}
 "use strict";
 var SB_URL="https://fszezlruwuyzdquomijs.supabase.co";
 var SB_KEY="sb_publishable_1xLOxtE1-5PyZW0zdrjoBg_6000CtCx";
-var VOTERS=6451292;
+var VOTERS=6451292,VOTERS23=6500666;
 var SRC=[
   {id:"RIK",name:"RIK",full:"Republička izborna komisija",c:"--rik"},
   {id:"CRTA",name:"CRTA",full:"posmatračka misija, 500 biračkih mesta",c:"--crta"},
@@ -342,6 +343,7 @@ function clock(h){var H=Math.floor(h),M=Math.round((h-H)*60);if(M===60){H++;M=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function nowH(){try{var p=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Belgrade",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());var H=+p.find(function(x){return x.type==="hour";}).value,M=+p.find(function(x){return x.type==="minute";}).value;return H+M/60;}catch(e){var d=new Date();return d.getHours()+d.getMinutes()/60;}}
 function todayIsElection(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Belgrade"}).format(new Date())==="2026-10-25";}catch(e){return true;}}
+function hilj(n){var k=Math.round(n/1000),t=k%100,u=k%10,w=(t>=11&&t<=14)?"hiljada":(u===1?"hiljada":(u>=2&&u<=4?"hiljade":"hiljada"));return k.toLocaleString("sr-RS")+" "+w;}
 function mil(n){return f(n/1e6,2)+" mil.";}
 
 // Monotone cubic interpolation (Fritsch–Carlson)
@@ -363,10 +365,12 @@ function primarySource(){var c={};SRC.forEach(function(s){c[s.id]=series(s.id).l
 // Blend: early in the day assume the gap vs. each past election holds (additive);
 // later assume the same relative pace for the rest of the day (multiplicative).
 function wMult(h){return Math.max(0,Math.min(1,(h-10)/6));}
-function scenAt(y,P,t){var a=CURVE[y].fn(P.h),b=CURVE[y].fn(t);if(a<0.5)return null;var add=b+(P.v-a),mul=P.v*b/a,w=wMult(P.h);return Math.max(P.v,Math.min(95,(1-w)*add+w*mul));}
+var PROJ_FROM=14;
+function share(h){var a=0,n=0;["2023","2022"].forEach(function(y){a+=CURVE[y].fn(h)/HIST[y].final;n++;});return a/n;}
+function scenAt(y,P,t){var a=CURVE[y].fn(P.h),b=CURVE[y].fn(t);if(a<0.5)return null;return Math.max(P.v,Math.min(95,P.v*b/a));}
 // Range is symmetric around the central value: spread = largest gap between the central
 // value and any comparable scenario (2016, 2022, 2023) + a margin that shrinks as the day goes on.
-function projectFrom(h,v){if(!v||h<8.5)return null;var P={h:h,v:v},sc={};YEARS.forEach(function(y){var x=scenAt(y,P,20);if(x!=null)sc[y]=x;});var cen=[];["2023","2022"].forEach(function(y){if(sc[y]!=null)cen.push(sc[y]);});if(!cen.length)return null;P.central=cen.reduce(function(a,b){return a+b;},0)/cen.length;var dev=0;Object.keys(sc).forEach(function(k){if(k!=="2020")dev=Math.max(dev,Math.abs(sc[k]-P.central));});var S=dev+0.15*(20-h);P.lo=Math.max(v,P.central-S);P.hi=Math.min(98,P.central+S);P.sc=sc;return P;}
+function projectFrom(h,v){if(!v||h<PROJ_FROM)return null;var P={h:h,v:v},sc={};YEARS.forEach(function(y){var x=scenAt(y,P,20);if(x!=null)sc[y]=x;});var cen=[];["2023","2022"].forEach(function(y){if(sc[y]!=null)cen.push(sc[y]);});if(!cen.length)return null;P.central=cen.reduce(function(a,b){return a+b;},0)/cen.length;var dev=0;Object.keys(sc).forEach(function(k){if(k!=="2020")dev=Math.max(dev,Math.abs(sc[k]-P.central));});var S=dev+0.15*(20-h);P.lo=Math.max(v,P.central-S);P.hi=Math.min(98,P.central+S);P.sc=sc;return P;}
 function projPath(P,t){var c=[],xs={};YEARS.forEach(function(y){var x=scenAt(y,P,t);if(x==null)return;xs[y]=x;if(y==="2023"||y==="2022")c.push(x);});var mid=c.reduce(function(a,b){return a+b;},0)/c.length,dev=0;Object.keys(xs).forEach(function(k){if(k!=="2020")dev=Math.max(dev,Math.abs(xs[k]-mid));});var k=(t-P.h)/(20-P.h),S=dev+0.15*(20-P.h)*k;return {mid:mid,lo:Math.max(P.v,mid-S),hi:Math.min(98,mid+S)};}
 
 // ---------- data ----------
@@ -405,9 +409,14 @@ function renderHero(){
   // projection
   var P=L?projectFrom(L.h,L.v):null,pv=document.getElementById("projVal"),pr=document.getElementById("projRange"),pn=document.getElementById("projNote"),pt=document.getElementById("projTitle");
   if(F){pt.textContent="Konačna izlaznost";pv.textContent=f(F.v,1)+"%";pr.textContent="2023: "+f(HIST["2023"].final,1)+"% · 2022: "+f(HIST["2022"].final,1)+"%";pn.textContent="";drawGauge(F.v,null,null);}
-  else if(P){var gap=L.v-ref2023(L.s,L.h).v;pt.textContent=wMult(P.h)<0.5?"Ako se razlika zadrži":"Ako se ovaj tempo zadrži";pv.textContent="≈ "+f(P.central,1)+"%";pr.textContent=wMult(P.h)<0.5?("Danas "+fpp(gap)+" p.p. prema 2023. Da ta razlika ostane do 20h, izlaznost bi bila oko "+f(P.central,1)+"%."):("Da ostatak dana teče kao 2022. i 2023, izlaznost bi bila oko "+f(P.central,1)+"%.");pn.textContent="2023: 58,8% · rekord 1990: 71,5% · na osnovu "+SRCMAP[L.s].name+" do "+hh(L.h);drawGauge(P.central,null,null);}
-  else{pt.textContent="Ako se tempo zadrži";pv.textContent="—";pr.textContent="pojaviće se posle prvog preseka";pn.textContent="2023: "+f(58.77,1)+"% · 2022: "+f(58.60,1)+"%";drawGauge(null,null,null);}
+  else if(P){var sh=share(P.h);pt.textContent="Ako ostatak dana ide kao 2022. i 2023.";pv.textContent="≈ "+f(P.central,1)+"%";pr.textContent="Na tim izborima je do "+hh(P.h)+" glasalo "+f(sh*100,0)+"% od svih koji su izašli tog dana. Ako je i danas tako, izlaznost će biti oko "+f(P.central,1)+"%.";pn.textContent="2023: 58,8% · rekord 1990: 71,5% · na osnovu "+SRCMAP[L.s].name+" do "+hh(L.h);showGauge(true);drawGauge(P.central,null,null);}
+  else if(L){var r=ref2023(L.s,L.h),n26=L.v/100*VOTERS,n23=r.v/100*VOTERS23,mx=Math.max(L.v,r.v);pt.textContent="Do "+hh(L.h)+": 2026. naspram 2023.";showGauge(false);
+    pv.innerHTML='<div class="cmp2"><div><span>2026.</span><div class="b"><i style="width:'+(L.v/mx*100).toFixed(1)+'%;background:var(--gold)"></i></div><b>'+f(L.v,1)+'%</b></div><div><span>2023.</span><div class="b"><i style="width:'+(r.v/mx*100).toFixed(1)+'%;background:rgba(255,255,255,.45)"></i></div><b>'+f(r.v,1)+'%</b></div></div>';
+    pr.innerHTML="Glasalo je oko <b>"+hilj(n26)+"</b> birača, "+(n23>0?f(n26/n23,1)+" puta više":"više")+" nego 2023. u isto vreme ("+hilj(n23)+").";
+    pn.textContent="Procena konačne izlaznosti stiže posle preseka u 14h, kad prođe više od pola dana.";}
+  else{pt.textContent="Procena konačne izlaznosti";showGauge(false);pv.textContent="—";pr.textContent="pojaviće se posle preseka u 14h";pn.textContent="2023: "+f(58.77,1)+"% · 2022: "+f(58.60,1)+"%";}
 }
+function showGauge(on){document.getElementById("gauge").style.display=on?"block":"none";var pv=document.getElementById("projVal");pv.style.marginTop=on?"":"12px";}
 function drawGauge(v,lo,hi){
   var g=document.getElementById("gauge"),cx=150,cy=150,R=118,min=30,max=80;
   function pt(val,r){var a=Math.PI*(1-(Math.max(min,Math.min(max,val))-min)/(max-min));return [cx+r*Math.cos(a),cy-r*Math.sin(a)];}
@@ -458,7 +467,7 @@ function renderSources(){
 function renderToggles(){
   var h="";SRC.forEach(function(S){h+='<button class="tog" data-k="src:'+S.id+'" aria-pressed="'+state.src[S.id]+'" style="--c:var('+S.c+')"><span class="sw"></span>'+esc(S.name)+' 2026</button>';});
   YEARS.forEach(function(y){h+='<button class="tog" data-k="yr:'+y+'" aria-pressed="'+state.yrs[y]+'" style="--c:var('+HIST[y].c+')"><span class="sw dash"></span>'+y+'.</button>';});
-  h+='<button class="tog" data-k="proj" aria-pressed="'+state.proj+'" style="--c:var(--gold-ink)"><span class="sw dash"></span>Ako se zadrži</button>';
+  h+='<button class="tog" data-k="proj" aria-pressed="'+state.proj+'" style="--c:var(--gold-ink)"><span class="sw dash"></span>Projekcija</button>';
   document.getElementById("togs").innerHTML=h;
 }
 var MAIN={};
@@ -517,7 +526,7 @@ function showTip(hr,cx,bw){
   var box=document.getElementById("mainChart"),tip=document.getElementById("tip"),g=box.querySelector("#hover"),X=MAIN.X,Y=MAIN.Y,m=MAIN.m;
   var rows=[],dots="";
   SRC.forEach(function(S){if(!state.src[S.id])return;var arr=series(S.id);if(!arr.length)return;var ex=arr.filter(function(p){return Math.abs(p.h-hr)<0.01;})[0];var lastH=arr[arr.length-1].h;if(ex){rows.push([S.name+" 2026",f(ex.v)+"%",S.c]);dots+='<circle cx="'+X(hr)+'" cy="'+Y(ex.v)+'" r="6" fill="none" stroke="var('+S.c+')" stroke-width="2"/>';}else if(hr<=lastH){var fn=mono([7].concat(arr.map(function(p){return p.h;})),[0].concat(arr.map(function(p){return p.v;})));rows.push([S.name+" 2026","≈ "+f(fn(hr),1)+"%",S.c]);}});
-  if(MAIN.P&&hr>=MAIN.P.h){var q=projPath(MAIN.P,hr);rows.push(["Ako se zadrži","≈ "+f(q.mid,1)+"%","--gold-ink"]);}
+  if(MAIN.P&&hr>=MAIN.P.h){var q=projPath(MAIN.P,hr);rows.push(["Projekcija","≈ "+f(q.mid,1)+"%","--gold-ink"]);}
   YEARS.forEach(function(y){if(!state.yrs[y])return;var e=exactHist(y,null,hr%1===0?hr:-1);var v=e?e.v:CURVE[y].fn(hr);rows.push([y+".",(e?"":"≈ ")+f(v,e?2:1)+"%",HIST[y].c]);dots+='<circle cx="'+X(hr)+'" cy="'+Y(v)+'" r="3.5" fill="var('+HIST[y].c+')"/>';});
   g.innerHTML='<line x1="'+X(hr)+'" x2="'+X(hr)+'" y1="'+m.t+'" y2="'+(m.t+MAIN.ih)+'" stroke="var(--ink)" stroke-width="1" opacity=".25"/>'+dots;
   tip.innerHTML='<div class="t">do '+clock(hr)+'</div>'+rows.map(function(r){return '<div class="r" style="--c:var('+r[2]+')"><span><i></i>'+esc(r[0])+'</span><b>'+r[1]+'</b></div>';}).join("");
